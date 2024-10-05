@@ -1,0 +1,119 @@
+/* Centraliza todo o conteúdo da página */
+#formTitleContainer {
+    text-align: center; /* Garante que o título fique no centro */
+    margin-bottom: 20px;
+  }
+  
+  #formContainer {
+    display: flex; /* Organiza o input e o botão em linha */
+    align-items: center; /* Alinha os itens verticalmente no centro */
+    gap: 10px; /* Espaçamento entre o input e o botão */
+    width: 100%; /* Garante que o formulário ocupe 100% da largura disponível */
+    max-width: 500px; /* Largura máxima do formulário */
+    margin: 0 auto; /* Centraliza o formulário na página */
+    position: relative; /* Necessário para controlar a posição da lista */
+  }
+  
+  #character {
+    flex: 1; /* Faz com que o input ocupe o espaço restante */
+    background-color: #010B40;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #FFCA4B;
+    border-radius: 4px;
+  }
+  
+  #submitButton {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: transparent;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  #submitButton:disabled {
+    background-color: transparent;
+    cursor: not-allowed;
+  }
+  
+  /* Estilos para a lista suspensa de sugestões */
+  .suggestions-list {
+    position: absolute; /* A lista é posicionada de forma absoluta em relação ao contêiner do input */
+    top: 100%; /* Garante que a lista apareça logo abaixo do input */
+    left: 0;
+    right: 0;
+    background-color: #010B40;
+    list-style-type: none;
+    padding: 0;
+    max-height: 150px;
+    overflow-y: auto;
+    z-index: 1000; /* Garante que a lista apareça acima de outros elementos */
+  }
+  
+  .suggestion-item {
+    padding: 10px;
+    cursor: pointer;
+  }
+  
+  .suggestion-item:hover {
+    background-color: #010B40;
+  }
+  
+  /* Estilos para a comparação horizontal */
+  .comparison-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+    padding-bottom: 20px;
+    overflow: auto;
+  }
+  
+  .comparison-labels,
+  .comparison-values {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+  }
+  
+  .label-item, .comparison-item {
+    flex: 1;
+    padding: 10px;
+    text-align: center;
+  }
+
+  .comparison-results {
+    max-height: 500px; /* Altura máxima para a área de comparações, ajuste conforme necessário */
+    overflow-y: auto;  /* Habilita a rolagem vertical quando a altura máxima for atingida */
+    padding: 10px;     /* Espaçamento interno para o conteúdo não ficar colado nas bordas */
+    
+    margin-top: 20px;  /* Espaçamento superior entre o formulário e a área de comparação */
+  }
+  
+  
+  .comparison-item {
+    margin: 5px;
+    padding: 10px;
+    text-align: center;
+    max-width: 150px;
+    word-wrap: break-word; /* Quebra as palavras longas em múltiplas linhas */
+  }
+  
+  .match {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #0d3d18; /* Verde claro */
+    border-radius: 13px;
+  }
+  
+  .mismatch {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #5e070e; /* Vermelho claro */
+    border-radius: 13px;
+  }
+  

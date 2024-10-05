@@ -1,0 +1,40 @@
+div#OptionContainer {
+    width: 200px;
+    height: 200px;
+    outline: 1px solid lightblue;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    
+}
+
+#choose {
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    outline: 1px solid yellow;
+    background-size: cover;
+    /*background: linear-gradient(180deg, #010326 0%, #010B40  100%);*/
+}
+
+#choose:hover {
+    outline: 1px solid red;
+}
+
+
+img {
+    width: 100px;
+    
+}
+
+div#container_text {
+    background-color: blue;
+}
+
+
+p#text {
+    margin-left: 10px;
+    font-size: 1.25em;
+    
+}

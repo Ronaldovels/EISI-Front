@@ -1,0 +1,52 @@
+main {
+    width: 900px;
+    height: 100%;
+    margin: 10px;
+    outline: 1px solid red;
+    /*backdrop-filter: blur(10px);*/
+   /* background: linear-gradient(180deg, #010326 0%, #010B40  100%);*/
+}
+
+nav {
+    outline: 1px solid green;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+#link_title, #link_sub {
+    text-decoration: none;
+}
+
+
+h1#home {
+    outline: 1px solid yellow;
+    font-size: 4em;
+}
+
+p#subtitle {
+    font-size: 1.5em;
+    outline: 1px solid yellow;
+}
+
+h1#nav1, #na2, #nav3, #nav4 {
+    text-decoration: none;
+}
+
+div#esquerda{
+    display: flex;
+    gap: 20px;
+    grid-column: 3;
+    grid-row: 1;
+    outline: 1px solid yellow;
+}
+
+section {
+    
+    margin-bottom: 20px;
+    outline: 1px solid purple;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
