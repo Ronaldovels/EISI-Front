@@ -64,11 +64,13 @@
     left: 0;
     right: 0;
     background-color: #010B40;
+    border: 1px solid #FFCA4B;
     list-style-type: none;
     padding: 0;
     max-height: 150px;
     overflow-y: auto;
     z-index: 1000; /* Garante que a lista apareça acima de outros elementos */
+    border-radius: 4%;
   }
   
   .suggestion-item {
@@ -265,9 +267,11 @@
   
   .comparison-item.match {
     background-color: #0d3d18; /* Verde para correspondências */
+    border: 2px solid #085e1c;
   }
   
   .comparison-item.mismatch {
+    border: 2px solid #8d0e18;
     background-color: #5e070e; /* Vermelho para erros */
   }
   
