@@ -128,6 +128,7 @@
     justify-content: center;
     background-color: #0d3d18; /* Verde claro */
     border-radius: 13px;
+    padding: 0;
   }
   
   .mismatch {
@@ -136,8 +137,16 @@
     justify-content: center;
     background-color: #5e070e; /* Vermelho claro */
     border-radius: 13px;
+    padding: 0;
   }
   
+
+  div#sucess-messageContainer {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 
   .success-message {
     padding: 10px 10px;
@@ -145,7 +154,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    width: 100%;
+    width: 250px;
     height: 100%;
     border: 1px solid brown;
     position: relative; /* Torna o elemento posicionado relativamente */
@@ -222,10 +231,10 @@
   }
   
   .comparison-img {
-    width: 60px;           /* Garante que a imagem ocupe 100% da largura do contêiner */
-    height: 60px;          /* Garante que a imagem ocupe 100% da altura do contêiner */
-    object-fit: cover;     /* Ajusta a imagem para cobrir o contêiner, cortando as bordas se necessário */
-    display: block;        /* Remove o espaçamento abaixo da imagem */
+      width: 100%;         /* Faz a imagem ocupar 100% da largura */
+    height: 100%;        /* Faz a imagem ocupar 100% da altura */
+    object-fit: fill;   /* Garante que a imagem cubra o contêiner, cortando as bordas se necessário */
+    border-radius: 14px;  /* Bordas arredondadas, opcional */
   }
   
   .image-wrapper {
@@ -309,4 +318,26 @@
   }
   
 
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
   
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px); /* Começa 20px abaixo */
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);    /* Volta à posição original */
+    }
+  }
+  
+  .success-message {
+    animation: fadeIn 1s ease-in-out, slideIn 1s ease-in-out;
+  }

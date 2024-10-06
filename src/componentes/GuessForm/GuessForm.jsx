@@ -10,6 +10,7 @@ function GuessForm() {
   const [selectedCharacter, setSelectedCharacter] = useState(null);
   const [comparisonHistory, setComparisonHistory] = useState([]);
   const [isGuessedCorrectly, setIsGuessedCorrectly] = useState(false);
+  const [showCongrats, setShowCongrats] = useState(false); // Para atrasar o parabéns
   const [timeRemaining, setTimeRemaining] = useState(''); // Para o tempo restante
 
   const lastQueriedValue = useRef('');
@@ -18,7 +19,6 @@ function GuessForm() {
   const guessedCharacterRef = useRef(null);
 
   const characteristicLabels = {
-    name: 'Name',
     gender: 'Gender',
     filiation: 'Filiation',
     race: 'Race',
@@ -45,6 +45,7 @@ function GuessForm() {
           const parsedGuess = JSON.parse(savedDailyGuess);
           if (parsedGuess && parsedGuess.characterId === data.id) {
             setIsGuessedCorrectly(true); // O usuário já acertou hoje
+            setShowCongrats(true); // Exibe o parabéns se o usuário já acertou
           }
         }
 
@@ -123,7 +124,7 @@ function GuessForm() {
     e.preventDefault();
     if (isSuggestionSelected && selectedCharacter && dailyCharacter) {
       const characteristics = [
-        'name', 'gender', 'filiation', 'race', 'hair_color', 'eye_color', 'introducion_arc', 'family', 'techniques'
+        'gender', 'filiation', 'race', 'hair_color', 'eye_color', 'introducion_arc', 'family', 'techniques'
       ];
 
       const allMatched = characteristics.every((characteristic) => {
@@ -155,6 +156,12 @@ function GuessForm() {
           'dailyGuess',
           JSON.stringify({ characterId: dailyCharacter.id, guessed: true })
         );
+
+        // Atrasar a exibição da seção de parabéns
+        const totalAnimationTime = 0.6 * 10 - 0.5; // 8 características com 0.6s de duração, mais o delay do último item (4.8s)
+        setTimeout(() => {
+          setShowCongrats(true); // Exibe parabéns após a animação
+        }, totalAnimationTime * 1000); // Converte para milissegundos
       }
 
       setInputValue('');
@@ -185,10 +192,10 @@ function GuessForm() {
   };
 
   useEffect(() => {
-    if (isGuessedCorrectly && guessedCharacterRef.current) {
+    if (isGuessedCorrectly && showCongrats && guessedCharacterRef.current) {
       guessedCharacterRef.current.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [isGuessedCorrectly]);
+  }, [showCongrats, isGuessedCorrectly]);
 
   // Chamar a função para atualizar o tempo restante
   useEffect(() => {
@@ -196,52 +203,44 @@ function GuessForm() {
     return () => clearInterval(timer); // Limpa o intervalo ao desmontar o componente
   }, []);
 
+  // Renderiza as comparações sem os labels
   const renderComparison = (comparison, index) => {
     const { selectedCharacter, dailyCharacter } = comparison;
   
     const characteristics = [
-      'characterImg', 'name', 'gender', 'filiation', 'race', 'hair_color', 'eye_color', 'introducion_arc', 'family', 'techniques'
+      'characterImg', 'gender', 'filiation', 'race', 'hair_color', 'eye_color', 'introducion_arc', 'family', 'techniques'
     ];
   
     return (
       <div key={comparison.id} className={`comparison-container animate-item`}>
-        <div className="comparison-labels">
-          {characteristics.map((characteristic) => (
-            <div key={characteristic} className="label-item">
-              <strong>{characteristicLabels[characteristic]}</strong>
-            </div>
-          ))}
-        </div>
-  
         <div className="comparison-values">
-          {characteristics.map((characteristic) => {
+          {characteristics.map((characteristic, i) => {
             const userValue = selectedCharacter[characteristic];
             const dailyValue = dailyCharacter[characteristic];
             const isMatch = userValue && dailyValue && userValue.toLowerCase() === dailyValue.toLowerCase();
   
-            // Verifica se a característica é a imagem
+            // Verifica se a característica é a imagem e renderiza corretamente a tag <img>
             if (characteristic === 'characterImg') {
               return (
                 <div
-                  key={characteristic}
+                  key={i}
                   className={`comparison-item ${isMatch ? 'match' : 'mismatch'}`}
                 >
-                  {/* Renderiza a imagem do personagem escolhido pelo usuário */}
-                  {selectedCharacter && selectedCharacter.characterImg && (
+                  {selectedCharacter.characterImg ? (
                     <img
                       src={selectedCharacter.characterImg}
                       alt={selectedCharacter.name || 'Selected character'}
                       className="comparison-img"
                       onError={(e) => { e.target.src = '/path/to/fallback-image.jpg'; }} // Fallback para imagem padrão
                     />
-                  )}
+                  ) : 'No Image'}
                 </div>
               );
             }
-  
+
             return (
               <div
-                key={characteristic}
+                key={i}
                 className={`comparison-item ${isMatch ? 'match' : 'mismatch'}`}
               >
                 {userValue || 'N/A'}
@@ -298,7 +297,18 @@ function GuessForm() {
         )}
       </div>
 
-      {/* Exibe a mensagem de parabéns acima das comparações */}
+      {/* Renderize os labels apenas uma vez */}
+      <div className="comparison-labels">
+        {[
+          'Character', 'Gender', 'Filiation', 'Race', 'Hair color', 'Eye color', 'Introduction Arc', 'Family', 'Techniques'
+        ].map((label, index) => (
+          <div key={index} className="label-item">
+            <strong>{label}</strong>
+          </div>
+        ))}
+      </div>
+
+      {/* Exibe a lista de comparações */}
       <div className="comparison-results">
         {comparisonHistory.map((comparison, index) => renderComparison(comparison, index))}
       </div>
@@ -319,20 +329,26 @@ function GuessForm() {
         </div>
       </div>
 
-      {isGuessedCorrectly && dailyCharacter && (
-        <div className="success-message" ref={guessedCharacterRef}>
-          <h2>Congrats! You guessed today's character!</h2>
-          <div id="characterGuessRight">
-            <img
-              src={dailyCharacter.characterImg} // Usa a URL da imagem retornada pela API
-              alt={dailyCharacter.name}
-              id="guessedCharacterImg"
-            />
-            <p id="guessedCharacterName">{dailyCharacter.name}</p>
+      {/* Exibe a seção de parabéns após o atraso com a animação */}
+      {isGuessedCorrectly && showCongrats && dailyCharacter && (
+        <div id="sucess-messageContainer">
+          <div className="success-message" ref={guessedCharacterRef}>
+            <h2>Congrats! You guessed today's character!</h2>
+            <div id="characterGuessRight">
+              <img
+                src={dailyCharacter.characterImg} // Usa a URL da imagem retornada pela API
+                alt={dailyCharacter.name}
+                id="guessedCharacterImg"
+              />
+              <p id="guessedCharacterName">{dailyCharacter.name}</p>
+            </div>
+            <p id='tries'>Tries: {comparisonHistory.length}</p> {/* Mostra o número de tentativas */}
+            <h2 id='timeNextCharacter'>Next Character in: </h2> {/* Mostra o tempo até o próximo personagem */}
+            <p id='timeRemaining'>{timeRemaining}</p>
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing <br />elit. Tempora tempore quibusdam illum explicabo  <br />est dolore assumenda nulla totam. Nesciunt, sed corrupti? Natus <br />rerum, exercitationem nesciunt consequuntur quam obcaecati ad dolorem.</p><br />
+            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. <br />Dolores reprehenderit odio perspiciatis sed, architecto assumenda labore quaerat <br />reiciendis ipsa vitae velit eveniet quasi atque, molestiae adipisci corporis quos eius quisquam!</p><br />
+            <p>Lorem ipsum <br />dolor sit amet consectetur adipisicing elit. Blanditiis totam numquam dolorem nemo, molestias ad iure, fuga voluptatem nobis <br />accusantium excepturi quia autem repellendus labore eveniet nisi voluptate cumque recusandae.</p>
           </div>
-          <p id='tries'>Tries: {comparisonHistory.length}</p> {/* Mostra o número de tentativas */}
-          <h2 id='timeNextCharacter'>Next Character in: </h2> {/* Mostra o tempo até o próximo personagem */}
-          <p id='timeRemaining'>{timeRemaining}</p>
         </div>
       )}
     </div>
