@@ -246,3 +246,63 @@
     margin: 20px;
   }
 
+  @keyframes fadeInCell {
+    0% {
+      opacity: 0;
+      transform: translateY(10px); /* Leve deslizamento de baixo */
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);    /* Volta à posição original */
+    }
+  }
+  
+  /* Todos os quadrados começam transparentes e recebem a animação */
+  .comparison-item {
+    opacity: 0;
+    animation: fadeInCell 0.6s ease forwards;
+  }
+  
+  .comparison-item.match {
+    background-color: #0d3d18; /* Verde para correspondências */
+  }
+  
+  .comparison-item.mismatch {
+    background-color: #5e070e; /* Vermelho para erros */
+  }
+  
+  /* Definindo o atraso progressivo para cada quadrado, de acordo com a posição */
+  .comparison-container .comparison-item:nth-child(1) {
+    animation-delay: 0s; /* Primeiro quadrado começa imediatamente */
+  }
+  .comparison-container .comparison-item:nth-child(2) {
+    animation-delay: 0.6s; /* Segundo quadrado começa após o primeiro terminar */
+  }
+  .comparison-container .comparison-item:nth-child(3) {
+    animation-delay: 1.2s; /* Terceiro quadrado começa após o segundo terminar */
+  }
+  .comparison-container .comparison-item:nth-child(4) {
+    animation-delay: 1.8s;
+  }
+  .comparison-container .comparison-item:nth-child(5) {
+    animation-delay: 2.4s;
+  }
+  .comparison-container .comparison-item:nth-child(6) {
+    animation-delay: 3s;
+  }
+  .comparison-container .comparison-item:nth-child(7) {
+    animation-delay: 3.6s;
+  }
+  .comparison-container .comparison-item:nth-child(8) {
+    animation-delay: 4.2s;
+  }
+  .comparison-container .comparison-item:nth-child(9) {
+    animation-delay: 4.8s;
+  }
+
+  .comparison-container .comparison-item:nth-child(10) {
+    animation-delay: 5.4s; 
+  }
+  
+
+  

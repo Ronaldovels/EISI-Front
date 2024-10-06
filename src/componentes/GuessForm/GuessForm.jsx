@@ -13,7 +13,7 @@ function GuessForm() {
   const [timeRemaining, setTimeRemaining] = useState(''); // Para o tempo restante
 
   const lastQueriedValue = useRef('');
-  
+
   // Referência para a div onde o personagem correto será mostrado
   const guessedCharacterRef = useRef(null);
 
@@ -132,10 +132,14 @@ function GuessForm() {
         return userValue && userValue.toLowerCase() === dailyValue.toLowerCase();
       });
 
-      const newComparison = { selectedCharacter, dailyCharacter };
+      const newComparison = {
+        selectedCharacter,
+        dailyCharacter,
+        id: new Date().getTime() // Criação de um ID único baseado no timestamp
+      };
 
       setComparisonHistory((prevHistory) => {
-        const updatedHistory = [newComparison, ...prevHistory];
+        const updatedHistory = [newComparison, ...prevHistory]; // Novo item adicionado no início
 
         // Salvar o histórico atualizado no Local Storage
         localStorage.setItem('comparisonHistory', JSON.stringify(updatedHistory));
@@ -200,7 +204,7 @@ function GuessForm() {
     ];
   
     return (
-      <div key={index} className="comparison-container">
+      <div key={comparison.id} className={`comparison-container animate-item`}>
         <div className="comparison-labels">
           {characteristics.map((characteristic) => (
             <div key={characteristic} className="label-item">
@@ -231,7 +235,6 @@ function GuessForm() {
                       onError={(e) => { e.target.src = '/path/to/fallback-image.jpg'; }} // Fallback para imagem padrão
                     />
                   )}
-                  
                 </div>
               );
             }
