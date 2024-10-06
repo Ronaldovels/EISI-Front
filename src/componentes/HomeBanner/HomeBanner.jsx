@@ -14,9 +14,7 @@ function Banner() {
                     <Link to="/" id='link_sub'>
                             <p id='subtitle'>In The Shadow, I Thrive</p>
                     </Link>
-                    
-                </nav>
-                
+                </nav> 
             </main>
     )
 }

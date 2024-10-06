@@ -1,5 +1,8 @@
 main {
-    width: 900px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
     height: 100%;
     margin: 10px;
     outline: 1px solid red;
@@ -27,18 +30,6 @@ h1#home {
 
 p#subtitle {
     font-size: 1.5em;
-    outline: 1px solid yellow;
-}
-
-h1#nav1, #na2, #nav3, #nav4 {
-    text-decoration: none;
-}
-
-div#esquerda{
-    display: flex;
-    gap: 20px;
-    grid-column: 3;
-    grid-row: 1;
     outline: 1px solid yellow;
 }
 

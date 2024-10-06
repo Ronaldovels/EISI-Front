@@ -176,7 +176,7 @@ function GuessForm() {
             autoComplete="off"
           />
           <button type="submit" id="submitButton" disabled={!isSuggestionSelected}>
-            Enviar
+          <img src="https://cdn.discordapp.com/attachments/691418911580749835/1292448273231122494/submitButton.png?ex=6703c5c0&is=67027440&hm=29dfbf651445c89d27ddeedf211b2d62a17c910791fb41457654cd1b46c9250d&" alt="submit" id='submitButtonImg'/>
           </button>
         </form>
 

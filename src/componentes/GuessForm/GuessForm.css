@@ -12,6 +12,17 @@
     max-width: 500px; /* Largura máxima do formulário */
     margin: 0 auto; /* Centraliza o formulário na página */
     position: relative; /* Necessário para controlar a posição da lista */
+    border: 1px solid purple;
+    align-items: center;
+    justify-content: center;
+  }
+
+  form#form_ {
+    height: 100%;
+    border: 1px solid white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   
   #character {
@@ -21,10 +32,13 @@
     font-size: 16px;
     border: 1px solid #FFCA4B;
     border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   
   #submitButton {
-    padding: 10px 20px;
+    padding: 10px 1px;
     font-size: 16px;
     background-color: transparent;
     color: white;
@@ -36,6 +50,11 @@
   #submitButton:disabled {
     background-color: transparent;
     cursor: not-allowed;
+  }
+
+  img#submitButtonImg  {
+    rotate: 90deg;
+    
   }
   
   /* Estilos para a lista suspensa de sugestões */
