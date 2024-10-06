@@ -11,6 +11,8 @@ body {
   width: 100vw;
   background: linear-gradient(180deg, #222126 0%, #474148  100%);
   background-image: url(assets/backgrouind.jpg);
-  background-size: cover;
+  background-size: contain;
+  background-attachment: fixed ;
+  overflow-x: hidden;
   backdrop-filter: blur(px);
 }

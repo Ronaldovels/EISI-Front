@@ -136,3 +136,52 @@
     border-radius: 13px;
   }
   
+
+  .success-message {
+    padding: 10px 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    border: 1px solid brown;
+    position: relative; /* Torna o elemento posicionado relativamente */
+    top: 20px; /* Move o elemento para baixo, semelhante ao margin-top */
+  }
+
+  div#characterGuessRight {
+    display: flex;
+    flex-direction: row;
+    padding-top: 30px;
+    gap: 20px;
+    outline: 1px solid wheat;
+  }
+
+  .comparison-images {
+    
+    margin-top: 10px;
+  }
+  
+  .comparison-img {
+    width: 60px;           /* Garante que a imagem ocupe 100% da largura do contêiner */
+    height: 60px;          /* Garante que a imagem ocupe 100% da altura do contêiner */
+    object-fit: cover;     /* Ajusta a imagem para cobrir o contêiner, cortando as bordas se necessário */
+    display: block;        /* Remove o espaçamento abaixo da imagem */
+  }
+  
+  .image-wrapper {
+    width: 150px;  /* Defina a largura desejada para o quadrado */
+    height: 150px; /* Defina a altura igual à largura para garantir o formato quadrado */
+    overflow: hidden; /* Garante que a imagem não transborde o contêiner */
+    position: relative; /* Facilita controle posicional, caso necessário */
+  }
+
+  p#guessedCharacterName, p#timeRemaining {
+    font-size: 1.8em;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    outline-color: 1px solid blue;
+  }
+

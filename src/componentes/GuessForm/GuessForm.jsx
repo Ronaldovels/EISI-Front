@@ -6,32 +6,53 @@ function GuessForm() {
   const [suggestions, setSuggestions] = useState([]);
   const [isSuggestionSelected, setIsSuggestionSelected] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [dailyCharacter, setDailyCharacter] = useState(null); 
-  const [selectedCharacter, setSelectedCharacter] = useState(null); 
-  const [comparisonHistory, setComparisonHistory] = useState([]); 
+  const [dailyCharacter, setDailyCharacter] = useState(null);
+  const [selectedCharacter, setSelectedCharacter] = useState(null);
+  const [comparisonHistory, setComparisonHistory] = useState([]);
+  const [isGuessedCorrectly, setIsGuessedCorrectly] = useState(false);
+  const [timeRemaining, setTimeRemaining] = useState(''); // Para o tempo restante
 
-  const lastQueriedValue = useRef(''); 
+  const lastQueriedValue = useRef('');
+  
+  // Referência para a div onde o personagem correto será mostrado
+  const guessedCharacterRef = useRef(null);
 
-  // Mapeamento de rótulos amigáveis
   const characteristicLabels = {
-    name: "Name",
-    gender: "Gender",
-    filiation: "Filiation",
-    race: "Race",
-    hair_color: "Hair color",
-    eye_color: "Eye color",
-    introducion_arc: "Introduction Arc",
-    family: "Family",
-    techniques: "Techniques"
+    name: 'Name',
+    gender: 'Gender',
+    filiation: 'Filiation',
+    race: 'Race',
+    hair_color: 'Hair color',
+    eye_color: 'Eye color',
+    introducion_arc: 'Introduction Arc',
+    family: 'Family',
+    techniques: 'Techniques',
+    characterImg: 'Character'
   };
 
-  // Função para buscar o personagem aleatório (do dia) ao carregar o componente
   useEffect(() => {
     const fetchDailyCharacter = async () => {
       try {
         const response = await fetch('https://eisi-back.onrender.com/character/daily');
         const data = await response.json();
-        setDailyCharacter(data); 
+        setDailyCharacter(data);
+
+        // Verificar se o usuário já acertou o personagem do dia e restaurar histórico
+        const savedDailyGuess = localStorage.getItem('dailyGuess');
+        const savedComparisonHistory = localStorage.getItem('comparisonHistory');
+        
+        if (savedDailyGuess) {
+          const parsedGuess = JSON.parse(savedDailyGuess);
+          if (parsedGuess && parsedGuess.characterId === data.id) {
+            setIsGuessedCorrectly(true); // O usuário já acertou hoje
+          }
+        }
+
+        // Restaurar o histórico de comparações
+        if (savedComparisonHistory) {
+          const parsedHistory = JSON.parse(savedComparisonHistory);
+          setComparisonHistory(parsedHistory);
+        }
       } catch (error) {
         console.error('Erro ao buscar o personagem do dia:', error);
       }
@@ -40,7 +61,6 @@ function GuessForm() {
     fetchDailyCharacter();
   }, []);
 
-  // Função para buscar os dados da API com base no nome digitado
   const fetchSuggestions = async (query) => {
     if (query.length === 0) {
       setSuggestions([]);
@@ -59,8 +79,8 @@ function GuessForm() {
       const data = await response.json();
 
       if (data && Array.isArray(data)) {
-        const filteredNames = data.map(item => item.name).filter(Boolean);
-        setSuggestions(filteredNames.slice(0, 5)); 
+        const filteredNames = data.map((item) => item.name).filter(Boolean);
+        setSuggestions(filteredNames.slice(0, 5));
       } else {
         setSuggestions([]);
       }
@@ -72,20 +92,18 @@ function GuessForm() {
     setLoading(false);
   };
 
-  // Função para buscar o personagem completo baseado no nome
   const fetchCharacterDetails = async (name) => {
     try {
       const response = await fetch(`https://eisi-back.onrender.com/character?name=${name}`);
       const data = await response.json();
       if (data && data.length > 0) {
-        setSelectedCharacter(data[0]); 
+        setSelectedCharacter(data[0]);
       }
     } catch (error) {
       console.error('Erro ao buscar detalhes do personagem:', error);
     }
   };
 
-  // Função chamada quando o usuário digita no input
   const handleInputChange = (e) => {
     const value = e.target.value;
     setInputValue(value);
@@ -94,42 +112,95 @@ function GuessForm() {
     fetchSuggestions(value);
   };
 
-  // Função para quando o usuário seleciona uma sugestão
   const handleSuggestionClick = (suggestion) => {
     setInputValue(suggestion);
     setSuggestions([]);
     setIsSuggestionSelected(true);
-    fetchCharacterDetails(suggestion); 
+    fetchCharacterDetails(suggestion);
   };
 
-  // Lidar com o envio do formulário e comparar o personagem selecionado com o personagem do dia
   const handleSubmit = (e) => {
     e.preventDefault();
     if (isSuggestionSelected && selectedCharacter && dailyCharacter) {
-      setComparisonHistory((prevHistory) => [
-        { selectedCharacter, dailyCharacter },
-        ...prevHistory
-      ]);
-      setInputValue(''); // Limpa o campo de entrada após envio
+      const characteristics = [
+        'name', 'gender', 'filiation', 'race', 'hair_color', 'eye_color', 'introducion_arc', 'family', 'techniques'
+      ];
+
+      const allMatched = characteristics.every((characteristic) => {
+        const userValue = selectedCharacter[characteristic];
+        const dailyValue = dailyCharacter[characteristic];
+        return userValue && userValue.toLowerCase() === dailyValue.toLowerCase();
+      });
+
+      const newComparison = { selectedCharacter, dailyCharacter };
+
+      setComparisonHistory((prevHistory) => {
+        const updatedHistory = [newComparison, ...prevHistory];
+
+        // Salvar o histórico atualizado no Local Storage
+        localStorage.setItem('comparisonHistory', JSON.stringify(updatedHistory));
+
+        return updatedHistory;
+      });
+
+      if (allMatched) {
+        setIsGuessedCorrectly(true);
+
+        // Salvar no localStorage que o usuário já acertou o personagem do dia
+        localStorage.setItem(
+          'dailyGuess',
+          JSON.stringify({ characterId: dailyCharacter.id, guessed: true })
+        );
+      }
+
+      setInputValue('');
       setIsSuggestionSelected(false);
-  
-      // Força a perda de foco
+
       document.activeElement.blur();
     } else {
       alert('Por favor, selecione uma das sugestões.');
     }
   };
-  
 
-  // Função para renderizar a comparação de características
+  // Função para calcular o tempo restante até o próximo personagem (24h UTC)
+  const calculateTimeRemaining = () => {
+    const now = new Date();
+    const nextCharacterTime = new Date();
+    nextCharacterTime.setUTCHours(24, 0, 0, 0); // Define para meia-noite UTC do próximo dia
+    if (now.getUTCHours() >= 0) {
+      nextCharacterTime.setUTCDate(now.getUTCDate() + 1);
+    }
+
+    const timeDiff = nextCharacterTime - now; // Diferença em milissegundos
+
+    const hours = Math.floor((timeDiff / (1000 * 60 * 60)) % 24);
+    const minutes = Math.floor((timeDiff / (1000 * 60)) % 60);
+    const seconds = Math.floor((timeDiff / 1000) % 60);
+
+    setTimeRemaining(`${hours}h ${minutes}m ${seconds}s`);
+  };
+
+  useEffect(() => {
+    if (isGuessedCorrectly && guessedCharacterRef.current) {
+      guessedCharacterRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [isGuessedCorrectly]);
+
+  // Chamar a função para atualizar o tempo restante
+  useEffect(() => {
+    const timer = setInterval(calculateTimeRemaining, 1000); // Atualiza o tempo a cada segundo
+    return () => clearInterval(timer); // Limpa o intervalo ao desmontar o componente
+  }, []);
+
   const renderComparison = (comparison, index) => {
     const { selectedCharacter, dailyCharacter } = comparison;
-
-    const characteristics = ['name', 'gender', 'filiation', 'race', 'hair_color', 'eye_color', 'introducion_arc', 'family', 'techniques'];
-
+  
+    const characteristics = [
+      'characterImg', 'name', 'gender', 'filiation', 'race', 'hair_color', 'eye_color', 'introducion_arc', 'family', 'techniques'
+    ];
+  
     return (
       <div key={index} className="comparison-container">
-        {/* Cabeçalhos com os nomes das características */}
         <div className="comparison-labels">
           {characteristics.map((characteristic) => (
             <div key={characteristic} className="label-item">
@@ -137,20 +208,40 @@ function GuessForm() {
             </div>
           ))}
         </div>
-
-        {/* Valores de comparação */}
+  
         <div className="comparison-values">
-          {characteristics.map((characteristic, i) => {
+          {characteristics.map((characteristic) => {
             const userValue = selectedCharacter[characteristic];
             const dailyValue = dailyCharacter[characteristic];
-            const isMatch = userValue && userValue.toLowerCase() === dailyValue.toLowerCase();
-
+            const isMatch = userValue && dailyValue && userValue.toLowerCase() === dailyValue.toLowerCase();
+  
+            // Verifica se a característica é a imagem
+            if (characteristic === 'characterImg') {
+              return (
+                <div
+                  key={characteristic}
+                  className={`comparison-item ${isMatch ? 'match' : 'mismatch'}`}
+                >
+                  {/* Renderiza a imagem do personagem escolhido pelo usuário */}
+                  {selectedCharacter && selectedCharacter.characterImg && (
+                    <img
+                      src={selectedCharacter.characterImg}
+                      alt={selectedCharacter.name || 'Selected character'}
+                      className="comparison-img"
+                      onError={(e) => { e.target.src = '/path/to/fallback-image.jpg'; }} // Fallback para imagem padrão
+                    />
+                  )}
+                  
+                </div>
+              );
+            }
+  
             return (
               <div
                 key={characteristic}
                 className={`comparison-item ${isMatch ? 'match' : 'mismatch'}`}
               >
-                {userValue}
+                {userValue || 'N/A'}
               </div>
             );
           })}
@@ -158,7 +249,7 @@ function GuessForm() {
       </div>
     );
   };
-
+  
   return (
     <div>
       <div id="formTitleContainer">
@@ -174,9 +265,18 @@ function GuessForm() {
             required
             placeholder="Digite um personagem"
             autoComplete="off"
+            disabled={isGuessedCorrectly} // Desativa o input se o personagem foi adivinhado
           />
-          <button type="submit" id="submitButton" disabled={!isSuggestionSelected}>
-          <img src="https://cdn.discordapp.com/attachments/691418911580749835/1292448273231122494/submitButton.png?ex=6703c5c0&is=67027440&hm=29dfbf651445c89d27ddeedf211b2d62a17c910791fb41457654cd1b46c9250d&" alt="submit" id='submitButtonImg'/>
+          <button
+            type="submit"
+            id="submitButton"
+            disabled={!isSuggestionSelected || isGuessedCorrectly} // Desativa o botão se o personagem foi adivinhado
+          >
+            <img
+              src="https://i.postimg.cc/CKs3ztg0/submit-Button.png"
+              alt="submit"
+              id="submitButtonImg"
+            />
           </button>
         </form>
 
@@ -195,10 +295,27 @@ function GuessForm() {
         )}
       </div>
 
-      {/* Exibe a comparação dos personagens em uma div separada */}
+      {/* Exibe a mensagem de parabéns acima das comparações */}
       <div className="comparison-results">
         {comparisonHistory.map((comparison, index) => renderComparison(comparison, index))}
       </div>
+
+      {isGuessedCorrectly && dailyCharacter && (
+        <div className="success-message" ref={guessedCharacterRef}>
+          <h2>Congrats! You guessed today's character!</h2>
+          <div id="characterGuessRight">
+            <img
+              src={dailyCharacter.characterImg} // Usa a URL da imagem retornada pela API
+              alt={dailyCharacter.name}
+              id="guessedCharacterImg"
+            />
+            <p id="guessedCharacterName">{dailyCharacter.name}</p>
+          </div>
+          <p id='tries'>Tries: {comparisonHistory.length}</p> {/* Mostra o número de tentativas */}
+          <h2 id='timeNextCharacter'>Next Character in: </h2> {/* Mostra o tempo até o próximo personagem */}
+          <p id='timeRemaining'>{timeRemaining}</p>
+        </div>
+      )}
     </div>
   );
 }
