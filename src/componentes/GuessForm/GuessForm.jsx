@@ -300,6 +300,22 @@ function GuessForm() {
         {comparisonHistory.map((comparison, index) => renderComparison(comparison, index))}
       </div>
 
+      <div id="colorIndicatorsContainer">
+        <div id='colorIndicators'>
+          <h2>Color Indicators</h2>
+          <div id="indicatorContainer">
+            <div id="correctIndicator">
+              <div id='greenSquare'></div>
+              <p id='greenText'>Correct</p>
+            </div>
+            <div id='incorrectIndicator'>
+            <div id='redSquare'></div>
+            <p id='redText'>Incorrect</p>
+          </div>
+          </div>
+        </div>
+      </div>
+
       {isGuessedCorrectly && dailyCharacter && (
         <div className="success-message" ref={guessedCharacterRef}>
           <h2>Congrats! You guessed today's character!</h2>

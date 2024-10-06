@@ -150,6 +150,61 @@
     top: 20px; /* Move o elemento para baixo, semelhante ao margin-top */
   }
 
+  div#colorIndicatorsContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    outline: 1px solid red;
+  }
+
+
+  div#colorIndicators {
+    width: 450px;
+    height: 130px;
+    outline: 1px solid blue;
+    text-align: center;
+  }
+
+  div#indicatorContainer {
+    outline: 1px solid yellow;
+    display: flex;
+  }
+
+  div#correctIndicator, div#incorrectIndicator {
+    width: 60px;
+    outline: 1px solid white;
+    margin: 20px;
+    gap: 40px;
+  }
+
+  div#greenSquare {
+    margin: auto;
+    background-color: #0d3d18;
+    width: 32px;
+    height: 32px;
+  }
+
+  div#redSquare {
+    margin: auto;
+    background-color: #5e070e;
+    width: 32px;
+    height: 32px;
+  }
+
+
+  p#greenText {
+    width: 32px;
+    height: 32px;
+  }
+
+  p#redText {
+   
+    width: 32px;
+    height: 32px;
+  }
+
   div#characterGuessRight {
     display: flex;
     flex-direction: row;
@@ -183,5 +238,10 @@
     align-items: center;
     justify-content: flex-start;
     outline-color: 1px solid blue;
+  }
+
+  p#tries {
+    font-size: 2em;
+    margin: 20px;
   }
 
