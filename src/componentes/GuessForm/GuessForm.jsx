@@ -36,19 +36,32 @@ function GuessForm() {
         const response = await fetch('https://eisi-back.onrender.com/character/daily');
         const data = await response.json();
         setDailyCharacter(data);
-
-        // Verificar se o usuário já acertou o personagem do dia e restaurar histórico
+  
         const savedDailyGuess = localStorage.getItem('dailyGuess');
         const savedComparisonHistory = localStorage.getItem('comparisonHistory');
+        const lastPlayedDate = localStorage.getItem('lastPlayedDate');
         
+        const currentDate = new Date().toISOString().split('T')[0]; // Obtém a data atual no formato YYYY-MM-DD
+  
+        // Verifica se o personagem do dia mudou (nova data) e reseta o local storage
+        if (lastPlayedDate !== currentDate) {
+          localStorage.removeItem('dailyGuess');
+          localStorage.removeItem('comparisonHistory');
+          localStorage.setItem('lastPlayedDate', currentDate);
+          setIsGuessedCorrectly(false);
+          setComparisonHistory([]);
+          setShowCongrats(false);
+        }
+  
+        // Restaurar o estado do jogo se a data ainda for a mesma e o usuário já tiver adivinhado o personagem
         if (savedDailyGuess) {
           const parsedGuess = JSON.parse(savedDailyGuess);
           if (parsedGuess && parsedGuess.characterId === data.id) {
-            setIsGuessedCorrectly(true); // O usuário já acertou hoje
-            setShowCongrats(true); // Exibe o parabéns se o usuário já acertou
+            setIsGuessedCorrectly(true);
+            setShowCongrats(true);
           }
         }
-
+  
         // Restaurar o histórico de comparações
         if (savedComparisonHistory) {
           const parsedHistory = JSON.parse(savedComparisonHistory);
@@ -58,9 +71,10 @@ function GuessForm() {
         console.error('Erro ao buscar o personagem do dia:', error);
       }
     };
-
+  
     fetchDailyCharacter();
   }, []);
+  
 
   const fetchSuggestions = async (query) => {
     if (query.length === 0) {
