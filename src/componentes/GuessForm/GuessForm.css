@@ -1,343 +1,395 @@
 /* Centraliza todo o conteúdo da página */
 #formTitleContainer {
-    text-align: center; /* Garante que o título fique no centro */
-    margin-bottom: 20px;
-  }
-  
-  #formContainer {
-    display: flex; /* Organiza o input e o botão em linha */
-    align-items: center; /* Alinha os itens verticalmente no centro */
-    gap: 10px; /* Espaçamento entre o input e o botão */
-    width: 100%; /* Garante que o formulário ocupe 100% da largura disponível */
-    max-width: 500px; /* Largura máxima do formulário */
-    margin: 0 auto; /* Centraliza o formulário na página */
-    position: relative; /* Necessário para controlar a posição da lista */
-    border: 1px solid purple;
-    align-items: center;
-    justify-content: center;
-  }
+  text-align: center;
+  /* Garante que o título fique no centro */
+  margin-bottom: 20px;
+}
 
-  form#form_ {
-    height: 100%;
-    border: 1px solid white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  #character {
-    flex: 1; /* Faz com que o input ocupe o espaço restante */
-    background-color: #010B40;
-    padding: 10px;
-    font-size: 16px;
-    border: 1px solid #FFCA4B;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  #submitButton {
-    padding: 10px 1px;
-    font-size: 16px;
-    background-color: transparent;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
-  #submitButton:disabled {
-    background-color: transparent;
-    cursor: not-allowed;
-  }
+#formContainer {
+  display: flex;
+  /* Organiza o input e o botão em linha */
+  align-items: center;
+  /* Alinha os itens verticalmente no centro */
+  gap: 10px;
+  /* Espaçamento entre o input e o botão */
+  width: 100%;
+  /* Garante que o formulário ocupe 100% da largura disponível */
+  max-width: 500px;
+  /* Largura máxima do formulário */
+  margin: 0 auto;
+  /* Centraliza o formulário na página */
+  position: relative;
+  /* Necessário para controlar a posição da lista */
+  border: 1px solid purple;
+  align-items: center;
+  justify-content: center;
+}
 
-  img#submitButtonImg  {
-    rotate: 90deg;
-    
-  }
-  
-  /* Estilos para a lista suspensa de sugestões */
-  .suggestions-list {
-    position: absolute; /* A lista é posicionada de forma absoluta em relação ao contêiner do input */
-    top: 100%; /* Garante que a lista apareça logo abaixo do input */
-    left: 0;
-    right: 0;
-    background-color: #010B40;
-    border: 1px solid #FFCA4B;
-    list-style-type: none;
-    padding: 0;
-    max-height: 150px;
-    overflow-y: auto;
-    z-index: 1000; /* Garante que a lista apareça acima de outros elementos */
-    border-radius: 4%;
-  }
-  
-  .suggestion-item {
-    padding: 10px;
-    cursor: pointer;
-  }
-  
-  .suggestion-item:hover {
-    background-color: #010B40;
-  }
-  
-  /* Estilos para a comparação horizontal */
-  .comparison-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-top: 20px;
-    padding-bottom: 20px;
-    overflow: auto;
-  }
-  
-  .comparison-labels,
-  .comparison-values {
-    display: flex;
-    justify-content: space-around;
-    width: 100%;
-  }
-  
-  .label-item, .comparison-item {
-    flex: 1;
-    padding: 10px;
-    text-align: center;
-  }
+form#form_ {
+  height: 100%;
+  border: 1px solid white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-  .comparison-results {
-    max-height: 500px; /* Altura máxima para a área de comparações, ajuste conforme necessário */
-    overflow-y: auto;  /* Habilita a rolagem vertical quando a altura máxima for atingida */
-    padding: 10px;     /* Espaçamento interno para o conteúdo não ficar colado nas bordas */
-    
-    margin-top: 20px;  /* Espaçamento superior entre o formulário e a área de comparação */
-  }
-  
-  
-  .comparison-item {
-    margin: 5px;
-    padding: 10px;
-    text-align: center;
-    max-width: 150px;
-    word-wrap: break-word; /* Quebra as palavras longas em múltiplas linhas */
-  }
-  
-  .match {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #0d3d18; /* Verde claro */
-    border-radius: 13px;
-    padding: 0;
-  }
-  
-  .mismatch {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #5e070e; /* Vermelho claro */
-    border-radius: 13px;
-    padding: 0;
-  }
-  
+#character {
+  flex: 1;
+  /* Faz com que o input ocupe o espaço restante */
+  background-color: #010B40;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #FFCA4B;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-  div#sucess-messageContainer {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
+#submitButton {
+  padding: 10px 1px;
+  font-size: 16px;
+  background-color: transparent;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
 
-  .success-message {
-    padding: 10px 10px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    width: 250px;
-    height: 100%;
-    border: 1px solid brown;
-    position: relative; /* Torna o elemento posicionado relativamente */
-    top: 20px; /* Move o elemento para baixo, semelhante ao margin-top */
-  }
+#submitButton:disabled {
+  background-color: transparent;
+  cursor: not-allowed;
+}
 
-  div#colorIndicatorsContainer {
-    margin-top: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-    outline: 1px solid red;
-  }
+img#submitButtonImg {
+  rotate: 90deg;
+
+}
+
+/* Estilos para a lista suspensa de sugestões */
+.suggestions-list {
+  position: absolute;
+  /* A lista é posicionada de forma absoluta em relação ao contêiner do input */
+  top: 100%;
+  /* Garante que a lista apareça logo abaixo do input */
+  left: 0;
+  right: 0;
+  background-color: #010B40;
+  border: 1px solid #FFCA4B;
+  list-style-type: none;
+  padding: 0;
+  max-height: 150px;
+  overflow-y: auto;
+  z-index: 1000;
+  /* Garante que a lista apareça acima de outros elementos */
+  border-radius: 4%;
+}
+
+.suggestion-item {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.suggestion-item:hover {
+  background-color: #010B40;
+}
+
+/* Estilos para a comparação horizontal */
+.comparison-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+  padding-bottom: 20px;
+  overflow: auto;
+}
+
+.comparison-labels,
+.comparison-values {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+}
+
+.label-item,
+.comparison-item {
+  flex: 1;
+  padding: 10px;
+  text-align: center;
+}
+
+.comparison-results {
+  max-height: 500px;
+  /* Altura máxima para a área de comparações, ajuste conforme necessário */
+  overflow-y: auto;
+  /* Habilita a rolagem vertical quando a altura máxima for atingida */
+  padding: 10px;
+  /* Espaçamento interno para o conteúdo não ficar colado nas bordas */
+
+  margin-top: 20px;
+  /* Espaçamento superior entre o formulário e a área de comparação */
+}
 
 
-  div#colorIndicators {
-    width: 450px;
-    height: 130px;
-    outline: 1px solid blue;
-    text-align: center;
-  }
+.comparison-item {
+  margin: 5px;
+  padding: 10px;
+  text-align: center;
+  max-width: 150px;
+  word-wrap: break-word;
+  /* Quebra as palavras longas em múltiplas linhas */
+}
 
-  div#indicatorContainer {
-    outline: 1px solid yellow;
-    display: flex;
-  }
+.match {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #0d3d18;
+  /* Verde claro */
+  border-radius: 13px;
+  padding: 0;
+}
 
-  div#correctIndicator, div#incorrectIndicator {
-    width: 60px;
-    outline: 1px solid white;
-    margin: 20px;
-    gap: 40px;
-  }
-
-  div#greenSquare {
-    margin: auto;
-    background-color: #0d3d18;
-    width: 32px;
-    height: 32px;
-  }
-
-  div#redSquare {
-    margin: auto;
-    background-color: #5e070e;
-    width: 32px;
-    height: 32px;
-  }
+.mismatch {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #5e070e;
+  /* Vermelho claro */
+  border-radius: 13px;
+  padding: 0;
+}
 
 
-  p#greenText {
-    width: 32px;
-    height: 32px;
-  }
+div#sucess-messageContainer {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-  p#redText {
-   
-    width: 32px;
-    height: 32px;
-  }
+.success-message {
+  padding: 10px 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 250px;
+  height: 100%;
+  border: 1px solid brown;
+  position: relative;
+  /* Torna o elemento posicionado relativamente */
+  top: 20px;
+  /* Move o elemento para baixo, semelhante ao margin-top */
+}
 
-  div#characterGuessRight {
-    display: flex;
-    flex-direction: row;
-    padding-top: 30px;
-    gap: 20px;
-    outline: 1px solid wheat;
-  }
+div#colorIndicatorsContainer {
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  outline: 1px solid red;
+}
 
-  .comparison-images {
-    
-    margin-top: 10px;
-  }
-  
-  .comparison-img {
-      width: 100%;         /* Faz a imagem ocupar 100% da largura */
-    height: 100%;        /* Faz a imagem ocupar 100% da altura */
-    object-fit: fill;   /* Garante que a imagem cubra o contêiner, cortando as bordas se necessário */
-    border-radius: 14px;  /* Bordas arredondadas, opcional */
-  }
-  
-  .image-wrapper {
-    width: 150px;  /* Defina a largura desejada para o quadrado */
-    height: 150px; /* Defina a altura igual à largura para garantir o formato quadrado */
-    overflow: hidden; /* Garante que a imagem não transborde o contêiner */
-    position: relative; /* Facilita controle posicional, caso necessário */
-  }
 
-  p#guessedCharacterName, p#timeRemaining {
-    font-size: 1.8em;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    outline-color: 1px solid blue;
-  }
+div#colorIndicators {
+  width: 450px;
+  height: 130px;
+  outline: 1px solid blue;
+  text-align: center;
+}
 
-  p#tries {
-    font-size: 2em;
-    margin: 20px;
-  }
+div#indicatorContainer {
+  outline: 1px solid yellow;
+  display: flex;
+}
 
-  @keyframes fadeInCell {
-    0% {
-      opacity: 0;
-      transform: translateY(10px); /* Leve deslizamento de baixo */
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(0);    /* Volta à posição original */
-    }
-  }
-  
-  /* Todos os quadrados começam transparentes e recebem a animação */
-  .comparison-item {
+div#correctIndicator,
+div#incorrectIndicator {
+  width: 60px;
+  outline: 1px solid white;
+  margin: 20px;
+  gap: 40px;
+}
+
+div#greenSquare {
+  margin: auto;
+  background-color: #0d3d18;
+  width: 32px;
+  height: 32px;
+}
+
+div#redSquare {
+  margin: auto;
+  background-color: #5e070e;
+  width: 32px;
+  height: 32px;
+}
+
+
+p#greenText {
+  width: 32px;
+  height: 32px;
+}
+
+p#redText {
+
+  width: 32px;
+  height: 32px;
+}
+
+div#characterGuessRight {
+  display: flex;
+  flex-direction: row;
+  padding-top: 30px;
+  gap: 20px;
+  outline: 1px solid wheat;
+}
+
+.comparison-images {
+
+  margin-top: 10px;
+}
+
+.comparison-img {
+  width: 100%;
+  /* Faz a imagem ocupar 100% da largura */
+  height: 100%;
+  /* Faz a imagem ocupar 100% da altura */
+  object-fit: fill;
+  /* Garante que a imagem cubra o contêiner, cortando as bordas se necessário */
+  border-radius: 14px;
+  /* Bordas arredondadas, opcional */
+}
+
+.image-wrapper {
+  width: 150px;
+  /* Defina a largura desejada para o quadrado */
+  height: 150px;
+  /* Defina a altura igual à largura para garantir o formato quadrado */
+  overflow: hidden;
+  /* Garante que a imagem não transborde o contêiner */
+  position: relative;
+  /* Facilita controle posicional, caso necessário */
+}
+
+p#guessedCharacterName,
+p#timeRemaining {
+  font-size: 1.8em;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  outline-color: 1px solid blue;
+}
+
+p#tries {
+  font-size: 2em;
+  margin: 20px;
+}
+
+@keyframes fadeInCell {
+  0% {
     opacity: 0;
-    animation: fadeInCell 0.6s ease forwards;
-  }
-  
-  .comparison-item.match {
-    background-color: #0d3d18; /* Verde para correspondências */
-    border: 2px solid #085e1c;
-  }
-  
-  .comparison-item.mismatch {
-    border: 2px solid #8d0e18;
-    background-color: #5e070e; /* Vermelho para erros */
-  }
-  
-  /* Definindo o atraso progressivo para cada quadrado, de acordo com a posição */
-  .comparison-container .comparison-item:nth-child(1) {
-    animation-delay: 0s; /* Primeiro quadrado começa imediatamente */
-  }
-  .comparison-container .comparison-item:nth-child(2) {
-    animation-delay: 0.6s; /* Segundo quadrado começa após o primeiro terminar */
-  }
-  .comparison-container .comparison-item:nth-child(3) {
-    animation-delay: 1.2s; /* Terceiro quadrado começa após o segundo terminar */
-  }
-  .comparison-container .comparison-item:nth-child(4) {
-    animation-delay: 1.8s;
-  }
-  .comparison-container .comparison-item:nth-child(5) {
-    animation-delay: 2.4s;
-  }
-  .comparison-container .comparison-item:nth-child(6) {
-    animation-delay: 3s;
-  }
-  .comparison-container .comparison-item:nth-child(7) {
-    animation-delay: 3.6s;
-  }
-  .comparison-container .comparison-item:nth-child(8) {
-    animation-delay: 4.2s;
-  }
-  .comparison-container .comparison-item:nth-child(9) {
-    animation-delay: 4.8s;
+    transform: translateY(10px);
+    /* Leve deslizamento de baixo */
   }
 
-  .comparison-container .comparison-item:nth-child(10) {
-    animation-delay: 5.4s; 
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+    /* Volta à posição original */
   }
-  
+}
 
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
+/* Todos os quadrados começam transparentes e recebem a animação */
+.comparison-item {
+  opacity: 0;
+  animation: fadeInCell 0.6s ease forwards;
+}
+
+.comparison-item.match {
+  background-color: #0d3d18;
+  /* Verde para correspondências */
+  border: 2px solid #085e1c;
+}
+
+.comparison-item.mismatch {
+  border: 2px solid #8d0e18;
+  background-color: #5e070e;
+  /* Vermelho para erros */
+}
+
+/* Definindo o atraso progressivo para cada quadrado, de acordo com a posição */
+.comparison-container .comparison-item:nth-child(1) {
+  animation-delay: 0s;
+  /* Primeiro quadrado começa imediatamente */
+}
+
+.comparison-container .comparison-item:nth-child(2) {
+  animation-delay: 0.6s;
+  /* Segundo quadrado começa após o primeiro terminar */
+}
+
+.comparison-container .comparison-item:nth-child(3) {
+  animation-delay: 1.2s;
+  /* Terceiro quadrado começa após o segundo terminar */
+}
+
+.comparison-container .comparison-item:nth-child(4) {
+  animation-delay: 1.8s;
+}
+
+.comparison-container .comparison-item:nth-child(5) {
+  animation-delay: 2.4s;
+}
+
+.comparison-container .comparison-item:nth-child(6) {
+  animation-delay: 3s;
+}
+
+.comparison-container .comparison-item:nth-child(7) {
+  animation-delay: 3.6s;
+}
+
+.comparison-container .comparison-item:nth-child(8) {
+  animation-delay: 4.2s;
+}
+
+.comparison-container .comparison-item:nth-child(9) {
+  animation-delay: 4.8s;
+}
+
+.comparison-container .comparison-item:nth-child(10) {
+  animation-delay: 5.4s;
+}
+
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
   }
-  
-  @keyframes slideIn {
-    from {
-      opacity: 0;
-      transform: translateY(20px); /* Começa 20px abaixo */
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);    /* Volta à posição original */
-    }
+
+  to {
+    opacity: 1;
   }
-  
-  .success-message {
-    animation: fadeIn 1s ease-in-out, slideIn 1s ease-in-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+    /* Começa 20px abaixo */
   }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    /* Volta à posição original */
+  }
+}
+
+.success-message {
+  animation: fadeIn 1s ease-in-out, slideIn 1s ease-in-out;
+}

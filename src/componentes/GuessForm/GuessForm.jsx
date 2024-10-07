@@ -36,15 +36,31 @@ function GuessForm() {
         const response = await fetch('https://eisi-back.onrender.com/character/daily');
         const data = await response.json();
         setDailyCharacter(data);
-  
+
         const savedDailyGuess = localStorage.getItem('dailyGuess');
         const savedComparisonHistory = localStorage.getItem('comparisonHistory');
         const lastPlayedDate = localStorage.getItem('lastPlayedDate');
-        
-        const currentDate = new Date().toISOString().split('T')[0]; // Obtém a data atual no formato YYYY-MM-DD
-  
-        // Verifica se o personagem do dia mudou (nova data) e reseta o local storage
-        if (lastPlayedDate !== currentDate) {
+
+        const now = new Date();
+        const currentDate = now.toISOString().split('T')[0]; // Data atual no formato YYYY-MM-DD
+
+        // Define a hora de troca (11:00 AM UTC)
+        const changeHour = 11;
+        const changeTime = new Date(Date.UTC(
+          now.getUTCFullYear(),
+          now.getUTCMonth(),
+          now.getUTCDate(),
+          changeHour, 0, 0, 0
+        ));
+
+        // Se a hora atual já passou do horário de troca, ajusta para o próximo dia
+        if (now >= changeTime) {
+          changeTime.setUTCDate(changeTime.getUTCDate() + 1);
+        }
+
+        // Verifica se a data armazenada é diferente da data atual ou se já passou o horário de troca
+        if (lastPlayedDate !== currentDate && now >= changeTime) {
+          // Limpa o localStorage e atualiza a data de última jogada
           localStorage.removeItem('dailyGuess');
           localStorage.removeItem('comparisonHistory');
           localStorage.setItem('lastPlayedDate', currentDate);
@@ -52,7 +68,7 @@ function GuessForm() {
           setComparisonHistory([]);
           setShowCongrats(false);
         }
-  
+
         // Restaurar o estado do jogo se a data ainda for a mesma e o usuário já tiver adivinhado o personagem
         if (savedDailyGuess) {
           const parsedGuess = JSON.parse(savedDailyGuess);
@@ -61,7 +77,7 @@ function GuessForm() {
             setShowCongrats(true);
           }
         }
-  
+
         // Restaurar o histórico de comparações
         if (savedComparisonHistory) {
           const parsedHistory = JSON.parse(savedComparisonHistory);
@@ -71,10 +87,11 @@ function GuessForm() {
         console.error('Erro ao buscar o personagem do dia:', error);
       }
     };
-  
+
     fetchDailyCharacter();
-  }, []);
-  
+  });
+
+
 
   const fetchSuggestions = async (query) => {
     if (query.length === 0) {
@@ -90,7 +107,8 @@ function GuessForm() {
     lastQueriedValue.current = query;
 
     try {
-      const response = await fetch(`https://eisi-back.onrender.com/character?name=${query}`);
+      // Busca nomes com correspondência parcial para sugestões
+      const response = await fetch(`https://eisi-back.onrender.com/character?name=${query}&exactMatch=false`);
       const data = await response.json();
 
       if (data && Array.isArray(data)) {
@@ -107,17 +125,23 @@ function GuessForm() {
     setLoading(false);
   };
 
+
   const fetchCharacterDetails = async (name) => {
     try {
-      const response = await fetch(`https://eisi-back.onrender.com/character?name=${name}`);
+      // Busca detalhes do personagem com correspondência exata
+      const response = await fetch(`https://eisi-back.onrender.com/character?name=${name}&exactMatch=true`);
       const data = await response.json();
       if (data && data.length > 0) {
         setSelectedCharacter(data[0]);
+      } else {
+        setSelectedCharacter(null);
       }
     } catch (error) {
       console.error('Erro ao buscar detalhes do personagem:', error);
+      setSelectedCharacter(null);
     }
   };
+
 
   const handleInputChange = (e) => {
     const value = e.target.value;
@@ -191,8 +215,12 @@ function GuessForm() {
   const calculateTimeRemaining = () => {
     const now = new Date();
     const nextCharacterTime = new Date();
-    nextCharacterTime.setUTCHours(24, 0, 0, 0); // Define para meia-noite UTC do próximo dia
-    if (now.getUTCHours() >= 0) {
+
+    // Define para 11:00 AM UTC do próximo dia
+    nextCharacterTime.setUTCHours(11, 0, 0, 0);
+
+    // Se a hora atual for igual ou maior que 11:00 AM, define para o próximo dia
+    if (now.getUTCHours() >= 11) {
       nextCharacterTime.setUTCDate(now.getUTCDate() + 1);
     }
 
@@ -220,11 +248,11 @@ function GuessForm() {
   // Renderiza as comparações sem os labels
   const renderComparison = (comparison, index) => {
     const { selectedCharacter, dailyCharacter } = comparison;
-  
+
     const characteristics = [
       'characterImg', 'gender', 'filiation', 'race', 'hair_color', 'eye_color', 'introducion_arc', 'family', 'techniques'
     ];
-  
+
     return (
       <div key={comparison.id} className={`comparison-container animate-item`}>
         <div className="comparison-values">
@@ -232,7 +260,7 @@ function GuessForm() {
             const userValue = selectedCharacter[characteristic];
             const dailyValue = dailyCharacter[characteristic];
             const isMatch = userValue && dailyValue && userValue.toLowerCase() === dailyValue.toLowerCase();
-  
+
             // Verifica se a característica é a imagem e renderiza corretamente a tag <img>
             if (characteristic === 'characterImg') {
               return (
@@ -265,7 +293,7 @@ function GuessForm() {
       </div>
     );
   };
-  
+
   return (
     <div>
       <div id="formTitleContainer">
@@ -336,9 +364,9 @@ function GuessForm() {
               <p id='greenText'>Correct</p>
             </div>
             <div id='incorrectIndicator'>
-            <div id='redSquare'></div>
-            <p id='redText'>Incorrect</p>
-          </div>
+              <div id='redSquare'></div>
+              <p id='redText'>Incorrect</p>
+            </div>
           </div>
         </div>
       </div>
