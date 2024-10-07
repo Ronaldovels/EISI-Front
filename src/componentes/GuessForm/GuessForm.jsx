@@ -30,6 +30,16 @@ function GuessForm() {
     characterImg: 'Character'
   };
 
+  const resetLocalStorage = () => {
+    localStorage.removeItem('dailyGuess');
+    localStorage.removeItem('comparisonHistory');
+    localStorage.removeItem('usedGuesses');
+    console.log('Local storage foi resetado');
+    setIsGuessedCorrectly(false);
+    setComparisonHistory([]);
+    setUsedGuesses([]);
+    setShowCongrats(false);
+  };
 
 
   useEffect(() => {
@@ -220,22 +230,29 @@ function GuessForm() {
   const calculateTimeRemaining = () => {
     const now = new Date();
     const nextCharacterTime = new Date();
-
+  
     // Define para 11:00 AM UTC do próximo dia
     nextCharacterTime.setUTCHours(11, 0, 0, 0);
-
+  
     // Se a hora atual for igual ou maior que 11:00 AM, define para o próximo dia
     if (now.getUTCHours() >= 11) {
       nextCharacterTime.setUTCDate(now.getUTCDate() + 1);
     }
-
+  
     const timeDiff = nextCharacterTime - now; // Diferença em milissegundos
-
+  
     const hours = Math.floor((timeDiff / (1000 * 60 * 60)) % 24);
     const minutes = Math.floor((timeDiff / (1000 * 60)) % 60);
     const seconds = Math.floor((timeDiff / 1000) % 60);
-
-    setTimeRemaining(`${hours}h ${minutes}m ${seconds}s`);
+  
+    const formattedTime = `${hours}h ${minutes}m ${seconds}s`;
+    setTimeRemaining(formattedTime);
+  
+    // Verifica se o tempo chegou a 0h 0m 0s
+    if (hours === 0 && minutes === 0 && seconds === 0) {
+      resetLocalStorage();
+      console.log("Local storage foi limpo porque o cronômetro chegou a 0h 0m 0s.");
+    }
   };
 
   useEffect(() => {
@@ -243,7 +260,6 @@ function GuessForm() {
       guessedCharacterRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [showCongrats, isGuessedCorrectly]);
-
   
 
   // Chamar a função para atualizar o tempo restante
