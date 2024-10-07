@@ -12,7 +12,7 @@ function GuessForm() {
   const [isGuessedCorrectly, setIsGuessedCorrectly] = useState(false);
   const [showCongrats, setShowCongrats] = useState(false); // Para atrasar o parabéns
   const [timeRemaining, setTimeRemaining] = useState(''); // Para o tempo restante
-
+  const [usedGuesses, setUsedGuesses] = useState([]);
   const lastQueriedValue = useRef('');
 
   // Referência para a div onde o personagem correto será mostrado
@@ -30,21 +30,22 @@ function GuessForm() {
     characterImg: 'Character'
   };
 
+
+
   useEffect(() => {
     const fetchDailyCharacter = async () => {
       try {
         const response = await fetch('https://eisi-back.onrender.com/character/daily');
         const data = await response.json();
         setDailyCharacter(data);
-
+    
         const savedDailyGuess = localStorage.getItem('dailyGuess');
         const savedComparisonHistory = localStorage.getItem('comparisonHistory');
         const lastPlayedDate = localStorage.getItem('lastPlayedDate');
-
+    
         const now = new Date();
-        const currentDate = now.toISOString().split('T')[0]; // Data atual no formato YYYY-MM-DD
-
-        // Define a hora de troca (11:00 AM UTC)
+        const currentDate = now.toISOString().split('T')[0];
+    
         const changeHour = 11;
         const changeTime = new Date(Date.UTC(
           now.getUTCFullYear(),
@@ -52,24 +53,22 @@ function GuessForm() {
           now.getUTCDate(),
           changeHour, 0, 0, 0
         ));
-
-        // Se a hora atual já passou do horário de troca, ajusta para o próximo dia
+    
         if (now >= changeTime) {
           changeTime.setUTCDate(changeTime.getUTCDate() + 1);
         }
-
-        // Verifica se a data armazenada é diferente da data atual ou se já passou o horário de troca
+    
         if (lastPlayedDate !== currentDate && now >= changeTime) {
-          // Limpa o localStorage e atualiza a data de última jogada
           localStorage.removeItem('dailyGuess');
           localStorage.removeItem('comparisonHistory');
+          localStorage.removeItem('usedGuesses');
           localStorage.setItem('lastPlayedDate', currentDate);
           setIsGuessedCorrectly(false);
           setComparisonHistory([]);
+          setUsedGuesses([]);
           setShowCongrats(false);
         }
-
-        // Restaurar o estado do jogo se a data ainda for a mesma e o usuário já tiver adivinhado o personagem
+    
         if (savedDailyGuess) {
           const parsedGuess = JSON.parse(savedDailyGuess);
           if (parsedGuess && parsedGuess.characterId === data.id) {
@@ -77,8 +76,7 @@ function GuessForm() {
             setShowCongrats(true);
           }
         }
-
-        // Restaurar o histórico de comparações
+    
         if (savedComparisonHistory) {
           const parsedHistory = JSON.parse(savedComparisonHistory);
           setComparisonHistory(parsedHistory);
@@ -87,9 +85,10 @@ function GuessForm() {
         console.error('Erro ao buscar o personagem do dia:', error);
       }
     };
+    
 
     fetchDailyCharacter();
-  });
+  }, []);
 
 
 
@@ -161,55 +160,61 @@ function GuessForm() {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (isSuggestionSelected && selectedCharacter && dailyCharacter) {
+      // Verifica se o personagem já foi usado como palpite
+      if (usedGuesses.includes(selectedCharacter.name)) {
+        alert('Este personagem já foi escolhido. Tente um personagem diferente.');
+        return;
+      }
+  
       const characteristics = [
         'gender', 'filiation', 'race', 'hair_color', 'eye_color', 'introducion_arc', 'family', 'techniques'
       ];
-
+  
       const allMatched = characteristics.every((characteristic) => {
         const userValue = selectedCharacter[characteristic];
         const dailyValue = dailyCharacter[characteristic];
         return userValue && userValue.toLowerCase() === dailyValue.toLowerCase();
       });
-
+  
       const newComparison = {
         selectedCharacter,
         dailyCharacter,
         id: new Date().getTime() // Criação de um ID único baseado no timestamp
       };
-
+  
       setComparisonHistory((prevHistory) => {
-        const updatedHistory = [newComparison, ...prevHistory]; // Novo item adicionado no início
-
-        // Salvar o histórico atualizado no Local Storage
+        const updatedHistory = [newComparison, ...prevHistory];
         localStorage.setItem('comparisonHistory', JSON.stringify(updatedHistory));
-
         return updatedHistory;
       });
-
+  
+      // Adiciona o nome do personagem à lista de usados
+      setUsedGuesses((prevGuesses) => [...prevGuesses, selectedCharacter.name]);
+      localStorage.setItem('usedGuesses', JSON.stringify([...usedGuesses, selectedCharacter.name]));
+  
       if (allMatched) {
         setIsGuessedCorrectly(true);
-
-        // Salvar no localStorage que o usuário já acertou o personagem do dia
         localStorage.setItem(
           'dailyGuess',
           JSON.stringify({ characterId: dailyCharacter.id, guessed: true })
         );
-
-        // Atrasar a exibição da seção de parabéns
-        const totalAnimationTime = 0.6 * 10 - 0.5; // 8 características com 0.6s de duração, mais o delay do último item (4.8s)
+      
+        const totalAnimationTime = 0.6 * 10 - 0.5; // Tempo total da animação das comparações em segundos
+        console.log('Starting timeout for showing congrats message');
         setTimeout(() => {
-          setShowCongrats(true); // Exibe parabéns após a animação
+          setShowCongrats(true);
+          console.log('Timeout finished, showing congrats message');
         }, totalAnimationTime * 1000); // Converte para milissegundos
       }
-
+  
       setInputValue('');
       setIsSuggestionSelected(false);
-
       document.activeElement.blur();
     } else {
       alert('Por favor, selecione uma das sugestões.');
     }
   };
+  
 
   // Função para calcular o tempo restante até o próximo personagem (24h UTC)
   const calculateTimeRemaining = () => {
@@ -238,6 +243,8 @@ function GuessForm() {
       guessedCharacterRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [showCongrats, isGuessedCorrectly]);
+
+  
 
   // Chamar a função para atualizar o tempo restante
   useEffect(() => {
