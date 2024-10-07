@@ -7,6 +7,7 @@ function GuessForm() {
   const [isSuggestionSelected, setIsSuggestionSelected] = useState(false);
   const [loading, setLoading] = useState(false);
   const [dailyCharacter, setDailyCharacter] = useState(null);
+  const [lastCharacter, setLastCharacter] = useState(null);
   const [selectedCharacter, setSelectedCharacter] = useState(null);
   const [comparisonHistory, setComparisonHistory] = useState([]);
   const [isGuessedCorrectly, setIsGuessedCorrectly] = useState(false);
@@ -41,6 +42,12 @@ function GuessForm() {
     setShowCongrats(false);
   };
 
+  useEffect(() => {
+    if (dailyCharacter) {
+      // Salva o dailyCharacter atual em lastCharacter antes de atualizar
+      setLastCharacter(dailyCharacter);
+    }
+  }, [dailyCharacter]);
 
   useEffect(() => {
     const fetchDailyCharacter = async () => {
@@ -48,14 +55,14 @@ function GuessForm() {
         const response = await fetch('https://eisi-back.onrender.com/character/daily');
         const data = await response.json();
         setDailyCharacter(data);
-    
+
         const savedDailyGuess = localStorage.getItem('dailyGuess');
         const savedComparisonHistory = localStorage.getItem('comparisonHistory');
         const lastPlayedDate = localStorage.getItem('lastPlayedDate');
-    
+
         const now = new Date();
         const currentDate = now.toISOString().split('T')[0];
-    
+
         const changeHour = 11;
         const changeTime = new Date(Date.UTC(
           now.getUTCFullYear(),
@@ -63,11 +70,11 @@ function GuessForm() {
           now.getUTCDate(),
           changeHour, 0, 0, 0
         ));
-    
+
         if (now >= changeTime) {
           changeTime.setUTCDate(changeTime.getUTCDate() + 1);
         }
-    
+
         if (lastPlayedDate !== currentDate && now >= changeTime) {
           localStorage.removeItem('dailyGuess');
           localStorage.removeItem('comparisonHistory');
@@ -78,7 +85,7 @@ function GuessForm() {
           setUsedGuesses([]);
           setShowCongrats(false);
         }
-    
+
         if (savedDailyGuess) {
           const parsedGuess = JSON.parse(savedDailyGuess);
           if (parsedGuess && parsedGuess.characterId === data.id) {
@@ -86,7 +93,7 @@ function GuessForm() {
             setShowCongrats(true);
           }
         }
-    
+
         if (savedComparisonHistory) {
           const parsedHistory = JSON.parse(savedComparisonHistory);
           setComparisonHistory(parsedHistory);
@@ -95,7 +102,7 @@ function GuessForm() {
         console.error('Erro ao buscar o personagem do dia:', error);
       }
     };
-    
+
 
     fetchDailyCharacter();
   }, []);
@@ -175,40 +182,40 @@ function GuessForm() {
         alert('Este personagem já foi escolhido. Tente um personagem diferente.');
         return;
       }
-  
+
       const characteristics = [
         'gender', 'filiation', 'race', 'hair_color', 'eye_color', 'introducion_arc', 'family', 'techniques'
       ];
-  
+
       const allMatched = characteristics.every((characteristic) => {
         const userValue = selectedCharacter[characteristic];
         const dailyValue = dailyCharacter[characteristic];
         return userValue && userValue.toLowerCase() === dailyValue.toLowerCase();
       });
-  
+
       const newComparison = {
         selectedCharacter,
         dailyCharacter,
         id: new Date().getTime() // Criação de um ID único baseado no timestamp
       };
-  
+
       setComparisonHistory((prevHistory) => {
         const updatedHistory = [newComparison, ...prevHistory];
         localStorage.setItem('comparisonHistory', JSON.stringify(updatedHistory));
         return updatedHistory;
       });
-  
+
       // Adiciona o nome do personagem à lista de usados
       setUsedGuesses((prevGuesses) => [...prevGuesses, selectedCharacter.name]);
       localStorage.setItem('usedGuesses', JSON.stringify([...usedGuesses, selectedCharacter.name]));
-  
+
       if (allMatched) {
         setIsGuessedCorrectly(true);
         localStorage.setItem(
           'dailyGuess',
           JSON.stringify({ characterId: dailyCharacter.id, guessed: true })
         );
-      
+
         const totalAnimationTime = 0.6 * 10 - 0.5; // Tempo total da animação das comparações em segundos
         console.log('Starting timeout for showing congrats message');
         setTimeout(() => {
@@ -216,7 +223,7 @@ function GuessForm() {
           console.log('Timeout finished, showing congrats message');
         }, totalAnimationTime * 1000); // Converte para milissegundos
       }
-  
+
       setInputValue('');
       setIsSuggestionSelected(false);
       document.activeElement.blur();
@@ -224,30 +231,30 @@ function GuessForm() {
       alert('Por favor, selecione uma das sugestões.');
     }
   };
-  
+
 
   // Função para calcular o tempo restante até o próximo personagem (24h UTC)
   const calculateTimeRemaining = () => {
     const now = new Date();
     const nextCharacterTime = new Date();
-  
+
     // Define para 11:00 AM UTC do próximo dia
     nextCharacterTime.setUTCHours(11, 0, 0, 0);
-  
+
     // Se a hora atual for igual ou maior que 11:00 AM, define para o próximo dia
     if (now.getUTCHours() >= 11) {
       nextCharacterTime.setUTCDate(now.getUTCDate() + 1);
     }
-  
+
     const timeDiff = nextCharacterTime - now; // Diferença em milissegundos
-  
+
     const hours = Math.floor((timeDiff / (1000 * 60 * 60)) % 24);
     const minutes = Math.floor((timeDiff / (1000 * 60)) % 60);
     const seconds = Math.floor((timeDiff / 1000) % 60);
-  
+
     const formattedTime = `${hours}h ${minutes}m ${seconds}s`;
     setTimeRemaining(formattedTime);
-  
+
     // Verifica se o tempo chegou a 0h 0m 0s
     if (hours === 0 && minutes === 0 && seconds === 0) {
       resetLocalStorage();
@@ -260,7 +267,7 @@ function GuessForm() {
       guessedCharacterRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [showCongrats, isGuessedCorrectly]);
-  
+
 
   // Chamar a função para atualizar o tempo restante
   useEffect(() => {
@@ -270,52 +277,65 @@ function GuessForm() {
 
   // Renderiza as comparações sem os labels
   const renderComparison = (comparison, index) => {
-    const { selectedCharacter, dailyCharacter } = comparison;
+  const { selectedCharacter, dailyCharacter } = comparison;
 
-    const characteristics = [
-      'characterImg', 'gender', 'filiation', 'race', 'hair_color', 'eye_color', 'introducion_arc', 'family', 'techniques'
-    ];
+  const characteristics = [
+    'characterImg', 'gender', 'filiation', 'race', 'hair_color', 'eye_color', 'introducion_arc', 'family', 'techniques'
+  ];
 
-    return (
-      <div key={comparison.id} className={`comparison-container animate-item`}>
-        <div className="comparison-values">
-          {characteristics.map((characteristic, i) => {
-            const userValue = selectedCharacter[characteristic];
-            const dailyValue = dailyCharacter[characteristic];
-            const isMatch = userValue && dailyValue && userValue.toLowerCase() === dailyValue.toLowerCase();
+  return (
+    <div key={comparison.id} className={`comparison-container animate-item`}>
+      <div className="comparison-values">
+        {characteristics.map((characteristic, i) => {
+          const userValue = selectedCharacter[characteristic];
+          const dailyValue = dailyCharacter[characteristic];
+          
+          // Inicialize como falso e cheque correspondências parciais para 'filiation'
+          let isPartialMatch = false;
 
-            // Verifica se a característica é a imagem e renderiza corretamente a tag <img>
-            if (characteristic === 'characterImg') {
-              return (
-                <div
-                  key={i}
-                  className={`comparison-item ${isMatch ? 'match' : 'mismatch'}`}
-                >
-                  {selectedCharacter.characterImg ? (
-                    <img
-                      src={selectedCharacter.characterImg}
-                      alt={selectedCharacter.name || 'Selected character'}
-                      className="comparison-img"
-                      onError={(e) => { e.target.src = '/path/to/fallback-image.jpg'; }} // Fallback para imagem padrão
-                    />
-                  ) : 'No Image'}
-                </div>
-              );
-            }
+          // Verifica correspondência parcial para 'filiation'
+          if (characteristic === 'filiation' && userValue && dailyValue) {
+            const userValuesArray = userValue.split(',').map((val) => val.trim().toLowerCase());
+            const dailyValuesArray = dailyValue.split(',').map((val) => val.trim().toLowerCase());
+            isPartialMatch = userValuesArray.some((userVal) => dailyValuesArray.includes(userVal));
+          }
 
+          // Verifica correspondência exata
+          const isExactMatch = userValue && dailyValue && userValue.toLowerCase() === dailyValue.toLowerCase();
+
+          // Verifica se a característica é a imagem e renderiza corretamente a tag <img>
+          if (characteristic === 'characterImg') {
             return (
               <div
                 key={i}
-                className={`comparison-item ${isMatch ? 'match' : 'mismatch'}`}
+                className={`comparison-item ${isExactMatch ? 'match' : isPartialMatch ? 'partial-match' : 'mismatch'}`}
               >
-                {userValue || 'N/A'}
+                {selectedCharacter.characterImg ? (
+                  <img
+                    src={selectedCharacter.characterImg}
+                    alt={selectedCharacter.name || 'Selected character'}
+                    className="comparison-img"
+                    onError={(e) => { e.target.src = '/path/to/fallback-image.jpg'; }} // Fallback para imagem padrão
+                  />
+                ) : 'No Image'}
               </div>
             );
-          })}
-        </div>
+          }
+
+          return (
+            <div
+              key={i}
+              className={`comparison-item ${isExactMatch ? 'match' : isPartialMatch ? 'partial-match' : 'mismatch'}`}
+            >
+              {userValue || 'N/A'}
+            </div>
+          );
+        })}
       </div>
-    );
-  };
+    </div>
+  );
+};
+
 
   return (
     <div>
@@ -390,6 +410,11 @@ function GuessForm() {
               <div id='redSquare'></div>
               <p id='redText'>Incorrect</p>
             </div>
+            <div id='parcialIndicator'>
+              <div id='yellowSquare'></div>
+              <p id='yellowText'>Parcial</p>
+            </div>
+              
           </div>
         </div>
       </div>
@@ -410,6 +435,20 @@ function GuessForm() {
             <p id='tries'>Tries: {comparisonHistory.length}</p> {/* Mostra o número de tentativas */}
             <h2 id='timeNextCharacter'>Next Character in: </h2> {/* Mostra o tempo até o próximo personagem */}
             <p id='timeRemaining'>{timeRemaining}</p>
+            
+            {lastCharacter && (
+              <div id="previousCharacterContainer">
+                <h2>Previous Character:</h2>
+                <div id="previousCharacter">
+                  <img
+                    src={lastCharacter.characterImg}
+                    alt={lastCharacter.name}
+                    id="previousCharacterImg"
+                  />
+                  <p>{lastCharacter.name}</p>
+                </div>
+              </div>
+            )}
             <p>Lorem ipsum dolor sit amet, consectetur adipisicing <br />elit. Tempora tempore quibusdam illum explicabo  <br />est dolore assumenda nulla totam. Nesciunt, sed corrupti? Natus <br />rerum, exercitationem nesciunt consequuntur quam obcaecati ad dolorem.</p><br />
             <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. <br />Dolores reprehenderit odio perspiciatis sed, architecto assumenda labore quaerat <br />reiciendis ipsa vitae velit eveniet quasi atque, molestiae adipisci corporis quos eius quisquam!</p><br />
             <p>Lorem ipsum <br />dolor sit amet consectetur adipisicing elit. Blanditiis totam numquam dolorem nemo, molestias ad iure, fuga voluptatem nobis <br />accusantium excepturi quia autem repellendus labore eveniet nisi voluptate cumque recusandae.</p>
