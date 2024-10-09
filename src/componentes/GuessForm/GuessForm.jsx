@@ -9,6 +9,7 @@ function GuessForm() {
   const [dailyCharacter, setDailyCharacter] = useState(null);
   const [selectedCharacter, setSelectedCharacter] = useState(null);
   const [lastCharacter, setLastCharacter] = useState(null);
+  const [isInputFocused, setIsInputFocused] = useState(false)
   const [comparisonHistory, setComparisonHistory] = useState([]);
   const [isGuessedCorrectly, setIsGuessedCorrectly] = useState(false);
   const [showCongrats, setShowCongrats] = useState(false); // Para atrasar o parabéns
@@ -18,6 +19,12 @@ function GuessForm() {
 
   // Referência para a div onde o personagem correto será mostrado
   const guessedCharacterRef = useRef(null);
+
+  const defaU = import.meta.env.VITE_XGRA0;
+  const reqUF = import.meta.env.VITE_XGRA1;
+  const reqUT = import.meta.env.VITE_XGRA2;
+  const dailyU = import.meta.env.VITE_XGRA3;
+  const lastU = import.meta.env.VITE_XGRA4;
 
   const characteristicLabels = {
     gender: 'Gender',
@@ -31,6 +38,66 @@ function GuessForm() {
     characterImg: 'Character'
   };
 
+  const fetchDailyCharacter = async () => {
+    try {
+      const response = await fetch(dailyU);
+      const data = await response.json();
+      setDailyCharacter(data);
+
+      const lastCharacterResponse = await fetch(lastU);
+      const lastCharacterData = await lastCharacterResponse.json();
+      setLastCharacter(lastCharacterData);
+
+      const savedDailyGuess = localStorage.getItem('dailyGuess');
+      const savedComparisonHistory = localStorage.getItem('comparisonHistory');
+      const lastPlayedDate = localStorage.getItem('lastPlayedDate');
+
+      const now = new Date();
+      const currentDate = now.toISOString().split('T')[0];
+
+      const changeHour = 11;
+      const changeTime = new Date(Date.UTC(
+        now.getUTCFullYear(),
+        now.getUTCMonth(),
+        now.getUTCDate(),
+        changeHour, 0, 0, 0
+      ));
+
+      if (now >= changeTime) {
+        changeTime.setUTCDate(changeTime.getUTCDate() + 1);
+      }
+
+      if (lastPlayedDate !== currentDate && now >= changeTime) {
+        localStorage.removeItem('dailyGuess');
+        localStorage.removeItem('comparisonHistory');
+        localStorage.removeItem('usedGuesses');
+        localStorage.setItem('lastPlayedDate', currentDate);
+        setIsGuessedCorrectly(false);
+        setComparisonHistory([]);
+        setUsedGuesses([]);
+        setShowCongrats(false);
+      }
+
+      if (savedDailyGuess) {
+        const parsedGuess = JSON.parse(savedDailyGuess);
+        if (parsedGuess && parsedGuess.characterId === data.id) {
+          setIsGuessedCorrectly(true);
+          setShowCongrats(true);
+        }
+      }
+
+      if (savedComparisonHistory) {
+        const parsedHistory = JSON.parse(savedComparisonHistory);
+        setComparisonHistory(parsedHistory);
+      }
+    } catch (error) {
+      console.error('Erro ao buscar o personagem do dia:', error);
+    }
+  };
+
+
+  
+
   const resetLocalStorage = () => {
     localStorage.removeItem('dailyGuess');
     localStorage.removeItem('comparisonHistory');
@@ -43,78 +110,6 @@ function GuessForm() {
   };
 
   useEffect(() => {
-    const savedLastCharacter = localStorage.getItem('lastCharacter');
-    if (savedLastCharacter) {
-      setLastCharacter(JSON.parse(savedLastCharacter));
-      console.log('Personagem do dia anterior carregado do localStorage:', JSON.parse(savedLastCharacter));
-    }
-  }, []);
-
-  const updateLastCharacter = () => {
-    if (dailyCharacter) {
-      setLastCharacter(dailyCharacter);
-      localStorage.setItem('lastCharacter', JSON.stringify(dailyCharacter));
-      console.log('Personagem do dia anterior salvo:', dailyCharacter);
-    } else {
-      console.log('dailyCharacter ainda não foi carregado.');
-    }
-  };
-
-  useEffect(() => {
-    const fetchDailyCharacter = async () => {
-      try {
-        const response = await fetch('https://eisi-back.onrender.com/character/daily');
-        const data = await response.json();
-        setDailyCharacter(data);
-
-        const savedDailyGuess = localStorage.getItem('dailyGuess');
-        const savedComparisonHistory = localStorage.getItem('comparisonHistory');
-        const lastPlayedDate = localStorage.getItem('lastPlayedDate');
-
-        const now = new Date();
-        const currentDate = now.toISOString().split('T')[0];
-
-        const changeHour = 11;
-        const changeTime = new Date(Date.UTC(
-          now.getUTCFullYear(),
-          now.getUTCMonth(),
-          now.getUTCDate(),
-          changeHour, 0, 0, 0
-        ));
-
-        if (now >= changeTime) {
-          changeTime.setUTCDate(changeTime.getUTCDate() + 1);
-        }
-
-        if (lastPlayedDate !== currentDate && now >= changeTime) {
-          localStorage.removeItem('dailyGuess');
-          localStorage.removeItem('comparisonHistory');
-          localStorage.removeItem('usedGuesses');
-          localStorage.setItem('lastPlayedDate', currentDate);
-          setIsGuessedCorrectly(false);
-          setComparisonHistory([]);
-          setUsedGuesses([]);
-          setShowCongrats(false);
-        }
-
-        if (savedDailyGuess) {
-          const parsedGuess = JSON.parse(savedDailyGuess);
-          if (parsedGuess && parsedGuess.characterId === data.id) {
-            setIsGuessedCorrectly(true);
-            setShowCongrats(true);
-          }
-        }
-
-        if (savedComparisonHistory) {
-          const parsedHistory = JSON.parse(savedComparisonHistory);
-          setComparisonHistory(parsedHistory);
-        }
-      } catch (error) {
-        console.error('Erro ao buscar o personagem do dia:', error);
-      }
-    };
-
-
     fetchDailyCharacter();
   }, []);
 
@@ -135,7 +130,7 @@ function GuessForm() {
 
     try {
       // Busca nomes com correspondência parcial para sugestões
-      const response = await fetch(`https://eisi-back.onrender.com/character?name=${query}&exactMatch=false`);
+      const response = await fetch(reqUF);
       const data = await response.json();
 
       if (data && Array.isArray(data)) {
@@ -156,7 +151,7 @@ function GuessForm() {
   const fetchCharacterDetails = async (name) => {
     try {
       // Busca detalhes do personagem com correspondência exata
-      const response = await fetch(`https://eisi-back.onrender.com/character?name=${name}&exactMatch=true`);
+      const response = await fetch(reqUT);
       const data = await response.json();
       if (data && data.length > 0) {
         setSelectedCharacter(data[0]);
@@ -178,11 +173,21 @@ function GuessForm() {
     fetchSuggestions(value);
   };
 
+  const handleInputFocus = () => {
+    setIsInputFocused(true);
+  };
+
+  const handleInputBlur = () => {
+    // Adiciona um pequeno atraso antes de esconder as sugestões para garantir que o clique seja registrado
+    setTimeout(() => setIsInputFocused(false), 200);
+  };
+
   const handleSuggestionClick = (suggestion) => {
     setInputValue(suggestion);
     setSuggestions([]);
     setIsSuggestionSelected(true);
     fetchCharacterDetails(suggestion);
+    setIsInputFocused(false);
   };
 
   const handleSubmit = (e) => {
@@ -246,6 +251,12 @@ function GuessForm() {
 
   // Função para calcular o tempo restante até o próximo personagem (24h UTC)
   const calculateTimeRemaining = () => {
+
+    
+
+
+
+
     const now = new Date();
     const nextCharacterTime = new Date();
 
@@ -263,12 +274,6 @@ function GuessForm() {
 
     const formattedTime = `${hours}h ${minutes}m ${seconds}s`;
     setTimeRemaining(formattedTime);
-
-    // Quando o cronômetro atinge 0h 0m 30s, salva o personagem atual como "lastCharacter"
-    if (hours === 0 && minutes === 0 && seconds === 1) {
-      updateLastCharacter()
-      console.log('Personagem do dia salvo como anterior', lastCharacter)
-    }
 
     if (hours === 0 && minutes === 0 && seconds === 0) {
       resetLocalStorage();
@@ -367,6 +372,8 @@ function GuessForm() {
             type="text"
             value={inputValue}
             onChange={handleInputChange}
+            onFocus={handleInputFocus}
+            onBlur={handleInputBlur}
             required
             placeholder="Digite um personagem"
             autoComplete="off"
@@ -385,7 +392,7 @@ function GuessForm() {
           </button>
         </form>
 
-        {suggestions.length > 0 && (
+        {isInputFocused && suggestions.length > 0 && (
           <ul className="suggestions-list">
             {suggestions.map((suggestion, index) => (
               <li
