@@ -26,8 +26,9 @@ function WelcomeMessage() {
           <div className="modal">
             <div className="modal-content">
               <h2>Welcome to EMINENCDLE!</h2>
-              <p id='disclaimer'>I'm just here to let you know that each one of Cid's disguises (Shadow, Minoru Kageno, Mundane Mann...) is a guessable character!</p>
-              <button onClick={handleCloseModal} id='disclaimerButton'>Got it!</button>
+              <p id='disclaimer'>I'm just here to let you know that each one of Cid's disguises (Shadow, Minoru Kageno, Mundane Mann...) is a guessable character.</p>
+              <p id='disclaimer'>Enjoy the game!😄</p>
+              <button onClick={handleCloseModal} id='disclaimerButton'>Got it</button>
             </div>
           </div>
         )}

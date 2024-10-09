@@ -433,6 +433,22 @@ function GuessForm() {
         {comparisonHistory.map((comparison, index) => renderComparison(comparison, index))}
       </div>
 
+      {lastCharacter && (
+        <div id="lastCharacterSection">
+          <div id="lastCharacterTitle">
+            <h2>Yesterday's Character</h2>
+          </div>
+          <div id="lastCharacterDetails">
+            <img
+              src={lastCharacter.characterImg}
+              alt={lastCharacter.name}
+              id="lastCharacterImg"
+            />
+            <p id="lastCharacterName">{lastCharacter.name}</p>
+          </div>
+        </div>
+      )}
+
       <div id="colorIndicatorsContainer">
         <div id='colorIndicators'>
           <h2>Color Indicators</h2>
@@ -458,7 +474,10 @@ function GuessForm() {
       {isGuessedCorrectly && showCongrats && dailyCharacter && (
         <div id="sucess-messageContainer">
           <div className="success-message" ref={guessedCharacterRef}>
-            <h2>Congrats! You guessed today's character!</h2>
+            <div id="congratsTitleContainer">
+              <h2>Congrats!</h2>
+              <h2 id='congratsTitle'>You guessed today's character!</h2>
+            </div>
             <div id="characterGuessRight">
               <img
                 src={dailyCharacter.characterImg} // Usa a URL da imagem retornada pela API
@@ -470,21 +489,7 @@ function GuessForm() {
             <p id='tries'>Tries: {comparisonHistory.length}</p> {/* Mostra o número de tentativas */}
             <h2 id='timeNextCharacter'>Next Character in: </h2> {/* Mostra o tempo até o próximo personagem */}
             <p id='timeRemaining'>{timeRemaining}</p>
-       {lastCharacter && (
-        <div id="lastCharacterSection">
-          <div id="lastCharacterTitle">
-            <h2>Last Character</h2>
-          </div>
-          <div id="lastCharacterDetails">
-            <img
-              src={lastCharacter.characterImg}
-              alt={lastCharacter.name}
-              id="lastCharacterImg"
-            />
-            <p id="lastCharacterName">{lastCharacter.name}</p>
-          </div>
-        </div>
-      )}
+       
             <p>Lorem ipsum dolor sit amet, consectetur adipisicing <br />elit. Tempora tempore quibusdam illum explicabo  <br />est dolore assumenda nulla totam. Nesciunt, sed corrupti? Natus <br />rerum, exercitationem nesciunt consequuntur quam obcaecati ad dolorem.</p><br />
             <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. <br />Dolores reprehenderit odio perspiciatis sed, architecto assumenda labore quaerat <br />reiciendis ipsa vitae velit eveniet quasi atque, molestiae adipisci corporis quos eius quisquam!</p><br />
             <p>Lorem ipsum <br />dolor sit amet consectetur adipisicing elit. Blanditiis totam numquam dolorem nemo, molestias ad iure, fuga voluptatem nobis <br />accusantium excepturi quia autem repellendus labore eveniet nisi voluptate cumque recusandae.</p>
