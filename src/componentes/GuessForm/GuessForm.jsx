@@ -129,7 +129,7 @@ function GuessForm() {
 
     try {
       // Busca nomes com correspondência parcial para sugestões
-      const response = await fetch(`${defaU}${route0}${route1}${query}&exactMatch=false`);
+      const response = await fetch(`${defaU}/character?name=${query}&exactMatch=false`);
       const data = await response.json();
   
       if (data && Array.isArray(data)) {
@@ -161,7 +161,7 @@ function GuessForm() {
   const fetchCharacterDetails = async (name) => {
     try {
       // Busca detalhes do personagem com correspondência exata
-      const response = await fetch(`${defaU}${route0}${route1}${name}&exactMatch=true`);
+      const response = await fetch(`${defaU}/character?name=${name}&exactMatch=true`);
       const data = await response.json();
       if (data && data.length > 0) {
         setSelectedCharacter(data[0]);

@@ -238,11 +238,6 @@ div#incorrectIndicator, div#parcialIndicator {
   gap: 40px;
 }
 
-
-div#lastCharacterTitle {
-
-}
-
 div#lastCharacterDetails {
   display: flex;
   align-items: center;
