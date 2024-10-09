@@ -86,8 +86,19 @@ img#submitButtonImg {
 }
 
 .suggestion-item {
-  padding: 10px;
+  display: flex;
+  align-items: center;
+  padding: 5px;
   cursor: pointer;
+ 
+}
+
+.suggestion-img {
+  width: 40px; /* Define a largura da imagem */
+  height: 40px; /* Define a altura da imagem */
+  object-fit: cover; /* Ajusta a imagem para cobrir o espaço sem distorção */
+  margin-right: 10px; /* Adiciona espaço entre a imagem e o nome */
+  border-radius: 4px; /* Bordas levemente arredondadas */
 }
 
 .suggestion-item:hover {

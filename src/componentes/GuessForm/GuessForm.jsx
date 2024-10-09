@@ -21,10 +21,10 @@ function GuessForm() {
   const guessedCharacterRef = useRef(null);
 
   const defaU = import.meta.env.VITE_XGRA0;
-  const reqUF = import.meta.env.VITE_XGRA1;
-  const reqUT = import.meta.env.VITE_XGRA2;
   const dailyU = import.meta.env.VITE_XGRA3;
   const lastU = import.meta.env.VITE_XGRA4;
+  const route0 = import.meta.env.VITE_ROUTE0
+  const route1 = import.meta.env.VITE_ROUTE1
 
   const characteristicLabels = {
     gender: 'Gender',
@@ -129,12 +129,23 @@ function GuessForm() {
 
     try {
       // Busca nomes com correspondência parcial para sugestões
-      const response = await fetch(`https://eisi-back.onrender.com/character?name=${query}&exactMatch=false`);
+      const response = await fetch(`${defaU}${route0}${route1}${query}&exactMatch=false`);
       const data = await response.json();
-
+  
       if (data && Array.isArray(data)) {
-        const filteredNames = data.map((item) => item.name).filter(Boolean);
-        setSuggestions(filteredNames.slice(0, 5));
+        // Mapeia para objetos que contêm o nome e a URL da imagem
+        const filteredSuggestions = data
+        .map((item) => ({
+          name: item.name,
+          characterImg: item.characterImg,
+        }))
+        .filter((item) => 
+          item.name && 
+          item.characterImg && 
+          item.name.toLowerCase().includes(lastQueriedValue.current)
+        );
+  
+        setSuggestions(filteredSuggestions.slice(0, 5));
       } else {
         setSuggestions([]);
       }
@@ -142,7 +153,7 @@ function GuessForm() {
       console.error('Erro ao buscar dados da API:', error);
       setSuggestions([]);
     }
-
+  
     setLoading(false);
   };
 
@@ -150,7 +161,7 @@ function GuessForm() {
   const fetchCharacterDetails = async (name) => {
     try {
       // Busca detalhes do personagem com correspondência exata
-      const response = await fetch(`https://eisi-back.onrender.com/character?name=${name}&exactMatch=true`);
+      const response = await fetch(`${defaU}${route0}${route1}${name}&exactMatch=true`);
       const data = await response.json();
       if (data && data.length > 0) {
         setSelectedCharacter(data[0]);
@@ -386,15 +397,21 @@ function GuessForm() {
         </form>
 
         {isInputFocused && suggestions.length > 0 && (
-          <ul className="suggestions-list">
-            {suggestions.map((suggestion, index) => (
-              <li
-                key={index}
-                onClick={() => handleSuggestionClick(suggestion)}
-                className="suggestion-item"
-              >
-                {suggestion}
-              </li>
+  <ul className="suggestions-list">
+    {suggestions.map((suggestion, index) => (
+      <li
+        key={index}
+        onClick={() => handleSuggestionClick(suggestion.name)}
+        className="suggestion-item"
+      >
+        <img
+          src={suggestion.characterImg}
+          alt={suggestion.name}
+          className="suggestion-img"
+          onError={(e) => { e.target.src = '/path/to/fallback-image.jpg'; }} // Fallback para imagem padrão
+        />
+        <span>{suggestion.name}</span>
+      </li>
             ))}
           </ul>
         )}
