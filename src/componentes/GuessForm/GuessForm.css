@@ -86,11 +86,8 @@ img#submitButtonImg {
 }
 
 .suggestion-item {
-  display: flex;
-  align-items: center;
   padding: 10px;
   cursor: pointer;
-  gap: 10px; /* Espaço entre a imagem e o texto */
 }
 
 .suggestion-item:hover {
