@@ -49,6 +49,41 @@ function GuessForm() {
     setShowCongrats(false);
   };
 
+  const setResetCookie = () => {
+    const nextResetTime = new Date();
+    nextResetTime.setUTCHours(10, 59, 59, 0); // Define para 10:59:59 UTC
+  
+    // Se já passou do horário de reset, define para o próximo dia.
+    if (new Date() >= nextResetTime) {
+      nextResetTime.setUTCDate(nextResetTime.getUTCDate() + 1);
+    }
+  
+    document.cookie = `nextResetTime=${nextResetTime.toISOString()}; expires=${nextResetTime.toUTCString()}; path=/`;
+    console.log('Próximo reset agendado para:', nextResetTime);
+  };
+
+  const checkAndResetLocalStorage = () => {
+    const getCookie = (name) => {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(';').shift();
+      return null;
+    };
+  
+    const storedResetTime = getCookie('nextResetTime');
+    const now = new Date();
+  
+    // Se não houver um cookie armazenado, ou se o horário atual for após o próximo reset, limpar o localStorage e definir o próximo reset.
+    if (!storedResetTime || new Date(storedResetTime) <= now) {
+      resetLocalStorage();
+      setResetCookie();
+    }
+  };
+
+  useEffect(() => {
+    checkAndResetLocalStorage();
+  }, []);
+
   const fetchDailyCharacter = async () => {
     try {
       const response = await fetch(dailyU);
@@ -285,6 +320,8 @@ function GuessForm() {
       console.log("Local storage foi limpo porque o cronômetro chegou a 0h 0m 0s.");
     }
   };
+
+  
 
   useEffect(() => {
     if (isGuessedCorrectly && showCongrats && guessedCharacterRef.current) {
