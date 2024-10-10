@@ -227,6 +227,35 @@ div#incorrectIndicator, div#parcialIndicator {
   gap: 40px;
 }
 
+
+div#lastCharacterTitle {
+
+}
+
+div#lastCharacterDetails {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+
+}
+
+img#lastCharacterImg {
+  width: 40px;
+  height: 40px;
+  border: 1px solid #FFCA4B;
+  border-radius: 10px;
+}
+
+p#lastCharacterName {
+  font-size: 1.2em;
+  margin: 10px;
+}
+
+div#lastCharacterSection {
+  outline: 1px solid green;
+}
+
 div#greenSquare {
   margin: auto;
   background-color: #0d3d18;

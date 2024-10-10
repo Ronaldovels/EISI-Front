@@ -7,8 +7,8 @@ function GuessForm() {
   const [isSuggestionSelected, setIsSuggestionSelected] = useState(false);
   const [loading, setLoading] = useState(false);
   const [dailyCharacter, setDailyCharacter] = useState(null);
-  const [lastCharacter, setLastCharacter] = useState(null);
   const [selectedCharacter, setSelectedCharacter] = useState(null);
+  const [lastCharacter, setLastCharacter] = useState(null);
   const [comparisonHistory, setComparisonHistory] = useState([]);
   const [isGuessedCorrectly, setIsGuessedCorrectly] = useState(false);
   const [showCongrats, setShowCongrats] = useState(false); // Para atrasar o parabéns
@@ -43,16 +43,27 @@ function GuessForm() {
   };
 
   useEffect(() => {
-    if (dailyCharacter) {
-      // Salva o dailyCharacter atual em lastCharacter antes de atualizar
-      setLastCharacter(dailyCharacter);
+    const savedLastCharacter = localStorage.getItem('lastCharacter');
+    if (savedLastCharacter) {
+      setLastCharacter(JSON.parse(savedLastCharacter));
+      console.log('Personagem do dia anterior carregado do localStorage:', JSON.parse(savedLastCharacter));
     }
-  }, [dailyCharacter]);
+  }, []);
+
+  const updateLastCharacter = () => {
+    if (dailyCharacter) {
+      setLastCharacter(dailyCharacter);
+      localStorage.setItem('lastCharacter', JSON.stringify(dailyCharacter));
+      console.log('Personagem do dia anterior salvo:', dailyCharacter);
+    } else {
+      console.log('dailyCharacter ainda não foi carregado.');
+    }
+  };
 
   useEffect(() => {
     const fetchDailyCharacter = async () => {
       try {
-        const response = await fetch('https://eisi-back.onrender.com/character/daily');
+        const response = await fetch('http://localhost:3000/character/daily');
         const data = await response.json();
         setDailyCharacter(data);
 
@@ -124,7 +135,7 @@ function GuessForm() {
 
     try {
       // Busca nomes com correspondência parcial para sugestões
-      const response = await fetch(`https://eisi-back.onrender.com/character?name=${query}&exactMatch=false`);
+      const response = await fetch(`http://localhost:3000/character?name=${query}&exactMatch=false`);
       const data = await response.json();
 
       if (data && Array.isArray(data)) {
@@ -145,7 +156,7 @@ function GuessForm() {
   const fetchCharacterDetails = async (name) => {
     try {
       // Busca detalhes do personagem com correspondência exata
-      const response = await fetch(`https://eisi-back.onrender.com/character?name=${name}&exactMatch=true`);
+      const response = await fetch(`http://localhost:3000/character?name=${name}&exactMatch=true`);
       const data = await response.json();
       if (data && data.length > 0) {
         setSelectedCharacter(data[0]);
@@ -238,15 +249,13 @@ function GuessForm() {
     const now = new Date();
     const nextCharacterTime = new Date();
 
-    // Define para 11:00 AM UTC do próximo dia
     nextCharacterTime.setUTCHours(11, 0, 0, 0);
 
-    // Se a hora atual for igual ou maior que 11:00 AM, define para o próximo dia
     if (now.getUTCHours() >= 11) {
       nextCharacterTime.setUTCDate(now.getUTCDate() + 1);
     }
 
-    const timeDiff = nextCharacterTime - now; // Diferença em milissegundos
+    const timeDiff = nextCharacterTime - now;
 
     const hours = Math.floor((timeDiff / (1000 * 60 * 60)) % 24);
     const minutes = Math.floor((timeDiff / (1000 * 60)) % 60);
@@ -255,9 +264,15 @@ function GuessForm() {
     const formattedTime = `${hours}h ${minutes}m ${seconds}s`;
     setTimeRemaining(formattedTime);
 
-    // Verifica se o tempo chegou a 0h 0m 0s
+    // Quando o cronômetro atinge 0h 0m 30s, salva o personagem atual como "lastCharacter"
+    if (hours === 0 && minutes === 0 && seconds === 1) {
+      updateLastCharacter()
+      console.log('Personagem do dia salvo como anterior', lastCharacter)
+    }
+
     if (hours === 0 && minutes === 0 && seconds === 0) {
       resetLocalStorage();
+      fetchDailyCharacter()
       console.log("Local storage foi limpo porque o cronômetro chegou a 0h 0m 0s.");
     }
   };
@@ -271,9 +286,12 @@ function GuessForm() {
 
   // Chamar a função para atualizar o tempo restante
   useEffect(() => {
-    const timer = setInterval(calculateTimeRemaining, 1000); // Atualiza o tempo a cada segundo
-    return () => clearInterval(timer); // Limpa o intervalo ao desmontar o componente
-  }, []);
+    if (dailyCharacter) {
+      console.log('dailyCharacter foi carregado:', dailyCharacter);
+      const timer = setInterval(calculateTimeRemaining, 1000);
+      return () => clearInterval(timer);
+    }
+  }, [dailyCharacter]);
 
   // Renderiza as comparações sem os labels
   const renderComparison = (comparison, index) => {
@@ -435,20 +453,21 @@ function GuessForm() {
             <p id='tries'>Tries: {comparisonHistory.length}</p> {/* Mostra o número de tentativas */}
             <h2 id='timeNextCharacter'>Next Character in: </h2> {/* Mostra o tempo até o próximo personagem */}
             <p id='timeRemaining'>{timeRemaining}</p>
-            
-            {lastCharacter && (
-              <div id="previousCharacterContainer">
-                <h2>Previous Character:</h2>
-                <div id="previousCharacter">
-                  <img
-                    src={lastCharacter.characterImg}
-                    alt={lastCharacter.name}
-                    id="previousCharacterImg"
-                  />
-                  <p>{lastCharacter.name}</p>
-                </div>
-              </div>
-            )}
+       {lastCharacter && (
+        <div id="lastCharacterSection">
+          <div id="lastCharacterTitle">
+            <h2>Last Character</h2>
+          </div>
+          <div id="lastCharacterDetails">
+            <img
+              src={lastCharacter.characterImg}
+              alt={lastCharacter.name}
+              id="lastCharacterImg"
+            />
+            <p id="lastCharacterName">{lastCharacter.name}</p>
+          </div>
+        </div>
+      )}
             <p>Lorem ipsum dolor sit amet, consectetur adipisicing <br />elit. Tempora tempore quibusdam illum explicabo  <br />est dolore assumenda nulla totam. Nesciunt, sed corrupti? Natus <br />rerum, exercitationem nesciunt consequuntur quam obcaecati ad dolorem.</p><br />
             <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. <br />Dolores reprehenderit odio perspiciatis sed, architecto assumenda labore quaerat <br />reiciendis ipsa vitae velit eveniet quasi atque, molestiae adipisci corporis quos eius quisquam!</p><br />
             <p>Lorem ipsum <br />dolor sit amet consectetur adipisicing elit. Blanditiis totam numquam dolorem nemo, molestias ad iure, fuga voluptatem nobis <br />accusantium excepturi quia autem repellendus labore eveniet nisi voluptate cumque recusandae.</p>
