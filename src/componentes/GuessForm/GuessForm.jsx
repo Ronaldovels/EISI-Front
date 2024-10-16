@@ -86,11 +86,11 @@ function GuessForm() {
 
   const fetchDailyCharacter = async () => {
     try {
-      const response = await fetch("https://eisi-back.onrender.com/daily");
+      const response = await fetch("https://eisi-back.onrender.com/character/daily");
       const data = await response.json();
       setDailyCharacter(data);
 
-      const lastCharacterResponse = await fetch("https://eisi-back.onrender.com/last");
+      const lastCharacterResponse = await fetch("https://eisi-back.onrender.com/character/last");
       const lastCharacterData = await lastCharacterResponse.json();
       setLastCharacter(lastCharacterData);
 
