@@ -86,11 +86,11 @@ function GuessForm() {
 
   const fetchDailyCharacter = async () => {
     try {
-      const response = await fetch("https://eisi-back.onrender.com/character/daily");
+      const response = await fetch("https://characterdle-api.onrender.com/character/eisi/daily");
       const data = await response.json();
       setDailyCharacter(data);
 
-      const lastCharacterResponse = await fetch("https://eisi-back.onrender.com/character/last");
+      const lastCharacterResponse = await fetch("https://characterdle-api.onrender.com/character/eisi/last");
       const lastCharacterData = await lastCharacterResponse.json();
       setLastCharacter(lastCharacterData);
 
@@ -164,7 +164,7 @@ function GuessForm() {
 
     try {
       // Busca nomes com correspondência parcial para sugestões
-      const response = await fetch(`https://eisi-back.onrender.com/character?name=${query}&exactMatch=false`);
+      const response = await fetch(`https://characterdle-api.onrender.com/character/eisi?name=${query}&exactMatch=false`);
       const data = await response.json();
   
       if (data && Array.isArray(data)) {
@@ -196,7 +196,7 @@ function GuessForm() {
   const fetchCharacterDetails = async (name) => {
     try {
       // Busca detalhes do personagem com correspondência exata
-      const response = await fetch(`https://eisi-back.onrender.com/character?name=${name}&exactMatch=true`);
+      const response = await fetch(`https://characterdle-api.onrender.com/character/eisi?name=${name}&exactMatch=true`);
       const data = await response.json();
       if (data && data.length > 0) {
         setSelectedCharacter(data[0]);
